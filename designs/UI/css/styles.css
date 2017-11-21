@@ -1,0 +1,155 @@
+body{
+   background:  ; 
+}
+.main-header {
+    height: 50px;
+    width:100%;
+    background: black;
+}
+
+.main-page {
+    
+    height: 720px;
+    width: 100%;
+}
+
+form{
+    width: 700px;
+    height: 600px;
+    margin:auto;
+    padding: 60px;
+    background:white;
+    
+}
+
+form input{
+    margin: 20px auto;
+    display: block;
+    padding: 10px;
+    width: 500px;
+}
+form button{
+    padding: 10px;
+    cursor: pointer;
+    color:white;
+    background: crimson;
+    margin-left:40%;
+}
+
+.headings {
+    width: 700px;
+    margin: 20px auto;
+}
+
+#welcome {
+    width: 700px;
+    margin:100px auto;
+    padding: 20px;
+    background: aliceblue;
+    text-align: center;
+    
+}
+
+.btn-row {
+    width:30%;
+    margin:10px auto;
+    padding: 10px;
+}
+
+.btn-deco {
+    margin: auto;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+
+.left {
+    height: 100%;
+    width: 30%;
+    padding: 20px;
+    float: left;
+    
+}
+
+.right {
+    height: 100%;
+    width: 70%;
+    float: right;
+    border: 1px solid black;
+    
+}
+
+.events {
+    width: 96%;
+    margin: 2%;
+    padding: 15px;
+    border: 1px solid black;
+    
+}
+.right h4,h6,p,button{
+    padding:5px;
+}
+
+.left h4,h3,label,input{
+    display: block;
+    margin:20px 0px;
+    padding: 15px 0px
+}
+.left label{
+    
+    padding-left: 0px;
+    width: 75%;
+    margin-bottom: 0px;
+    padding-bottom: 2px;
+}
+.left input{
+    padding: 10px;
+    width: 75%;
+}
+.left select{
+    
+    display: block;
+    margin:20p 0px;
+    padding: 15px;
+    width:75%;
+    height: 40px;
+}
+
+.btn-create-event {
+    display: block;
+    margin:20px 0px;
+    padding: 15px;
+}
+
+.login {
+    border: 2px solid black;
+    height: 400px;
+}
+
+.register {
+    border: 2px solid black;
+}
+
+.create-events {
+    border: 2px solid black;
+}
+.create-events input,label,select,textarea,button {
+    
+    display: block;
+    margin: 30px;
+    margin-top: 10px;
+    padding:10px;
+}
+.create-events select{
+    display: block;
+    margin:20p 0px;
+    padding: 15px;
+    width:75%;
+    height: 40px;
+}
+.create-events label{
+    
+    margin: 0 30px;
+    padding-bottom: 0;
+}
+
