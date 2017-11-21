@@ -139,6 +139,7 @@ form button{
     margin: 30px;
     margin-top: 10px;
     padding:10px;
+    margin-left: 0px;
 }
 .create-events select{
     display: block;
@@ -151,5 +152,8 @@ form button{
     
     margin: 0 30px;
     padding-bottom: 0;
+    margin-left: 0px;
+    padding-left:0px;
 }
+
 
