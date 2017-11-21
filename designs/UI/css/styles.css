@@ -1,10 +1,36 @@
 body{
-   background:  ; 
+   background: #333399 ; 
+}
+.wrap{
+    background:white ;
+}
+
+
+h1{
+    color: black;
+}
+h3{
+    color: azure;
+}
+h4{
+    color:azure;
+}
+
+button:hover{
+    opacity: 0.5;
+    cursor: pointer;
+    color: black;
+    border: 1px solid black;
+}
+.wrap::after{
+    content: "";
+    display: block;
+    clear: both;
 }
 .main-header {
     height: 50px;
     width:100%;
-    background: black;
+    background: #020731;
 }
 
 .main-page {
@@ -14,8 +40,8 @@ body{
 }
 
 form{
-    width: 700px;
-    height: 600px;
+    width: 55%;
+
     margin:auto;
     padding: 60px;
     background:white;
@@ -36,10 +62,7 @@ form button{
     margin-left:40%;
 }
 
-.headings {
-    width: 700px;
-    margin: 20px auto;
-}
+
 
 #welcome {
     width: 700px;
@@ -64,28 +87,34 @@ form button{
 
 
 .left {
-    height: 100%;
-    width: 30%;
+    
     padding: 20px;
     float: left;
+    background: #3366CC;
+    
     
 }
 
 .right {
-    height: 100%;
-    width: 70%;
+    height: 100%;  
     float: right;
-    border: 1px solid black;
+    padding: 0px;
     
+}
+.right h4{
+    color: black;
 }
 
 .events {
-    width: 96%;
-    margin: 2%;
     padding: 15px;
-    border: 1px solid black;
+    border-bottom: 1px solid rgb(236, 236, 236);
+}
+.events:hover{
+    cursor: pointer;
+    background: rgb(236, 236, 236);
     
 }
+
 .right h4,h6,p,button{
     padding:5px;
 }
@@ -101,6 +130,7 @@ form button{
     width: 75%;
     margin-bottom: 0px;
     padding-bottom: 2px;
+    color: azure;
 }
 .left input{
     padding: 10px;
@@ -121,14 +151,6 @@ form button{
     padding: 15px;
 }
 
-.login {
-    border: 2px solid black;
-    height: 400px;
-}
-
-.register {
-    border: 2px solid black;
-}
 
 .create-events {
     border: 2px solid black;
@@ -156,4 +178,21 @@ form button{
     padding-left:0px;
 }
 
+.event-wrapper {
+    padding: 0px;
+    overflow: hidden;
+}
 
+.login-wrapper {
+    
+}
+
+.headings {
+    margin:auto;
+    width: 55%;
+    padding: 10px;
+    color: azure;
+}
+.headings h1{
+    color: azure;
+}
