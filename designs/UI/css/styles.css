@@ -1,5 +1,8 @@
 body{
-   background: #333399 ; 
+   background: #333399 ;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+    
+    
 }
 .wrap{
     background:white ;
@@ -8,12 +11,27 @@ body{
 
 h1{
     color: black;
+    font-style: normal;
+    font-weight:200;
+    font-size: 36px;
+    line-height: 54px;
 }
+
+
 h3{
     color: azure;
 }
 h4{
     color:azure;
+    font-style: normal;
+    font-weight:700;
+    font-size: 20px;
+}
+
+p{
+    font-style: normal;
+    font-weight: 400;
+    font-size:16px;
 }
 
 button:hover{
@@ -31,6 +49,7 @@ button:hover{
     height: 50px;
     width:100%;
     background: #020731;
+    padding: 10px;
 }
 
 .main-page {
@@ -38,30 +57,6 @@ button:hover{
     height: 720px;
     width: 100%;
 }
-
-form{
-    width: 55%;
-
-    margin:auto;
-    padding: 60px;
-    background:white;
-    
-}
-
-form input{
-    margin: 20px auto;
-    display: block;
-    padding: 10px;
-    width: 500px;
-}
-form button{
-    padding: 10px;
-    cursor: pointer;
-    color:white;
-    background: crimson;
-    margin-left:40%;
-}
-
 
 
 #welcome {
@@ -91,8 +86,7 @@ form button{
     padding: 20px;
     float: left;
     background: #3366CC;
-    
-    
+        
 }
 
 .right {
@@ -112,7 +106,7 @@ form button{
 .events:hover{
     cursor: pointer;
     background: rgb(236, 236, 236);
-    
+    color: rgb(51,89,239);
 }
 
 .right h4,h6,p,button{
@@ -183,10 +177,6 @@ form button{
     overflow: hidden;
 }
 
-.login-wrapper {
-    
-}
-
 .headings {
     margin:auto;
     width: 55%;
@@ -196,3 +186,60 @@ form button{
 .headings h1{
     color: azure;
 }
+
+.create-events-form {
+    
+    width:55%;
+    
+    margin:auto;
+    padding: 60px;
+    background:white;
+}
+
+.register-form {
+    
+    width: 55%;
+
+    margin:auto;
+    padding: 60px;
+    background:white;
+}
+
+.login-form {
+    
+    width:55%;
+    
+    margin:auto;
+    padding: 60px;
+    background:white;
+}
+
+
+@media (max-width: 680px) {
+  
+    .register-form{
+        width: 100%;
+
+    }
+}
+
+@media (max-width: 680px) {
+  
+    .login-form{
+        width: 100%;
+
+    }
+}
+
+@media (max-width: 680px) {
+  
+    .create-events-form{
+        width: 100%;
+
+    }
+}
+.nav-main {
+    color: azure;
+    padding: 5px;
+}
+
