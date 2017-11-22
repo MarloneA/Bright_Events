@@ -7,10 +7,10 @@
     <meta name="author" content="">
     <link rel="icon" href="">
 
-    <title>Home Page</title>
+    <title>Events</title>
 
     <!-- Bootstrap core CSS -->
-   <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" >
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
     <link rel="stylesheet" type="text/css" href="css/styles.css" >
@@ -18,27 +18,114 @@
 
 
 <body> 
-
-    <header class="main-header">
-        
-    </header>
     
-    <div class="wrapper">
+    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Bright Events</a>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="events.html" target="_blank">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="login.html" target="_blank" >login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="register.html" target="_blank" >register</a>
+              </li>
+                
+                <li class="nav-item">
+                <a class="nav-link" href="index.html" >Events</a>
+              </li>
+                
+                <li class="nav-item">
+                <a class="nav-link" href="create-events.html" target="_blank" >New Event</a>
+              </li>
+                
+            
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+              <input class="form-control mr-sm-2" type="text" placeholder="Search">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+          </div>
+</nav>
+   
+    <div class="wrap container">
         
-        
-      
-        <div class="main-page" >
-        
-            <h1 id="welcome" >Welcome to Bright Events</h1>
-            <div class="row btn-row">
-                <button class="btn btn-md btn-deco">Create Event</button>
-                <button class="btn btn-md btn-deco">View Events</button>
+        <div class="row event-wrapper">
+           <div class=" col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 left">
+                <h4>Bright Events</h4>
+                <h3>Connect share Inspire</h3>
+
+                <input type="text" placeholder="search">
+
+                <label>Filter by category</label>
+
+                <select>
+                        <option>dance</option>
+                        <option>music</option>
+                        <option>recitals</option>
+                        <option>plays</option>
+                    </select>
+
+                    <label>Filter by location</label>
+                    <select>
+                        <option>nairobi</option>
+                        <option>mombasa</option>
+                        <option>kisumu</option>
+                        <option>kakamega</option>
+                    </select>
+
+                    <button class="btn-create-event">Search for event</button>
+            </div>
+
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12 right">
+                <div class="events">
+                    <h4>Title of Event</h4>
+                    <h6>date of event</h6>
+                    <p>This project is broken down into 4 challenges whose completion would contribute greatly to your learning towards becoming a full-stack developer. Upon completion, you would have built a world-class full-stack (frontend and backend)  Python and JavaScript  application.
+
+                    </p>
+                    <h6>Date Created</h6>
+                    <button class="btn btn-default btn-lg">RSVP</button>
+                </div>
+
+                <div class="events">
+                    <h4>Title of Event</h4>
+                    <h6>date of event</h6>
+                    <p>This project is broken down into 4 challenges whose completion would contribute greatly to your learning towards becoming a full-stack developer. Upon completion, you would have built a world-class full-stack (frontend and backend)  Python and JavaScript  application.
+
+                    </p>
+                    <h6>Date Created</h6>
+                    <button class="btn btn-default btn-lg">RSVP</button>
+                </div>
+                <div class="events">
+                    <h4>Title of Event</h4>
+                    <h6>date of event</h6>
+                    <p>This project is broken down into 4 challenges whose completion would contribute greatly to your learning towards becoming a full-stack developer. Upon completion, you would have built a world-class full-stack (frontend and backend)  Python and JavaScript  application.
+
+                    </p>
+
+                    <h6>Date Created</h6>
+                    <button class=" btn btn-default btn-lg">RSVP</button>
+                </div>
+
+
             </div>
             
         </div>
-            
-            
     </div>
-
+    
+    
+    
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    
 </body>
 </html>
