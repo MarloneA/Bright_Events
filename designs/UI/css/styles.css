@@ -1,5 +1,5 @@
 body{
-   background: #333399 ;
+   
     font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
     
     
@@ -34,37 +34,53 @@ p{
     font-size:16px;
 }
 
+
 button:hover{
     opacity: 0.5;
     cursor: pointer;
     color: black;
     border: 1px solid black;
 }
+
+li:hover{
+    
+    color: azure;
+    background: #4A78F6;
+    
+    cursor: pointer;
+}
+
 .wrap::after{
     content: "";
     display: block;
     clear: both;
 }
-.main-header {
-    height: 50px;
-    width:100%;
-    background: #020731;
-    padding: 10px;
-}
 
 .main-page {
-    
-    height: 720px;
+
+    height:100%;
     width: 100%;
+    
+    padding: 20px;
+    
+    background: -moz-linear-gradient(46deg, #4A78F6 37%, #F6F6F6 29%, #FFFF 68%, #4A78F6 55%);/* FF3.6+ */
+    background: -webkit-gradient(linear, 46deg, color-stop(37%, 4A78F6), color-stop(29%, F6F6F6), color-stop(68%, FFFF), color-stop(55%, 4A78F6));/* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(46deg, #4A78F6 37%, #F6F6F6 29%, #FFFF 68%, #4A78F6 55%);/* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(46deg, #4A78F6 37%, #F6F6F6 29%, #FFFF 68%, #4A78F6 55%);/* Opera 11.10+ */
+    background: -ms-linear-gradient(46deg, #4A78F6 37%, #F6F6F6 29%, #FFFF 68%, #4A78F6 55%);/* IE10+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1301FE', endColorstr='#F4F60C', GradientType='1'); /* for IE */
+    background: linear-gradient(46deg, #4A78F6 37%, #F6F6F6 29%, #FFFF 68%, #4A78F6 55%);/* W3C */
 }
 
 
 #welcome {
-    width: 700px;
+    width: 100%;
     margin:100px auto;
     padding: 20px;
-    background: aliceblue;
+    background: white;
     text-align: center;
+    
+    font-size: 380%;
     
 }
 
@@ -184,7 +200,7 @@ button:hover{
     color: azure;
 }
 .headings h1{
-    color: azure;
+    color: black;
 }
 
 .create-events-form {
@@ -194,6 +210,11 @@ button:hover{
     margin:auto;
     padding: 60px;
     background:white;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=50, Direction=162, Color=#000000)";/*IE 8*/
+    -moz-box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/*FF 3.5+*/
+    -webkit-box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/*Saf3-4, Chrome, iOS 4.0.2-4.2, Android 2.3+*/
+    box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/* FF3.5+, Opera 9+, Saf1+, Chrome, IE10 */
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=50, Direction=135, Color=#000000); /*IE 5.5-7*/
 }
 
 .register-form {
@@ -203,6 +224,12 @@ button:hover{
     margin:auto;
     padding: 60px;
     background:white;
+    
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=50, Direction=162, Color=#000000)";/*IE 8*/
+    -moz-box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/*FF 3.5+*/
+    -webkit-box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/*Saf3-4, Chrome, iOS 4.0.2-4.2, Android 2.3+*/
+    box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/* FF3.5+, Opera 9+, Saf1+, Chrome, IE10 */
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=50, Direction=135, Color=#000000); /*IE 5.5-7*/
 }
 
 .login-form {
@@ -212,8 +239,51 @@ button:hover{
     margin:auto;
     padding: 60px;
     background:white;
+    
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=50, Direction=162, Color=#000000)";/*IE 8*/
+    -moz-box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/*FF 3.5+*/
+    -webkit-box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/*Saf3-4, Chrome, iOS 4.0.2-4.2, Android 2.3+*/
+    box-shadow: 3px 1px 50px 9px rgba(0,0,0,0.3);/* FF3.5+, Opera 9+, Saf1+, Chrome, IE10 */
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=50, Direction=135, Color=#000000); /*IE 5.5-7*/
 }
 
+
+
+
+
+
+.slider {
+    
+    width:900px;
+    text-align: center;
+
+    margin: auto;
+}
+
+.barner {
+    width: 100%;
+    height: 200px;
+    background: azure;
+    
+}
+
+.featurete {
+    width: 100%;
+    height: 465px;
+    background: #007bff;
+}
+
+.main-features {
+    height: 862px;
+    width: 100%;
+    background: white;
+}
+
+.main-footer {
+    width:100%;
+    height: 400px;
+    background: black;
+}
 
 @media (max-width: 680px) {
   
@@ -238,8 +308,41 @@ button:hover{
 
     }
 }
-.nav-main {
-    color: azure;
-    padding: 5px;
+
+@media (max-width: 680px) {
+  
+    .main-page{
+        width: 100%;
+
+    }
+}
+@media (max-width: 680px) {
+  
+    .slider{
+        width: 400px;
+
+    }
+}
+@media (max-width: 680px) {
+  
+    .welcome{
+    
+        width: 100%;
+
+    }
 }
 
+nav input{
+    margin: inherit;
+}
+
+#lgn-fix {
+    height: 720px;
+}
+
+.main-header {
+    height: 50px;
+    width:100%;
+    background: #020731;
+    padding: 10px;
+}
