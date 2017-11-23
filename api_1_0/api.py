@@ -4,9 +4,9 @@ app = Flask(__name__)
 
 users = [{"name":"Marlone","email":"marlone911@gmail.com"},{"name":"Prestone","email":"pres911@gmail.com"},{"name":"Daltone","email":"dalt911@gmail.com"}]
 events = [{"title":"Rumba","category":"dance"},{"title":"Flamenco","category":"mariachi"},{"title":"Picado","category":"tango"}]
-logged_in = []
-logged_out = []
-updated_passwords = []
+logged_in = [{"name":"Brian"},{"name":"Ryu"},{"name":"Rio"}]
+logged_out = [{"name":"Sheila"},{"name":"Lisa"},{"name":"Jane"}]
+updated_passwords = [{"password":"123"},{"password":"654"},{"password":"grunt2117"}]
 RSVP = [{"name":"Uno"},{"name":"miho"},{"name":"punto"}]
 
 
@@ -24,8 +24,6 @@ def create_user():
 @app.route('/api/auth/login', methods = ['POST'])
 def login_user():
 
-    #confirm if a user is in the list of users
-
     login_user = {'username':request.json['username']}
     logged_in.append(login_user)
 
@@ -36,7 +34,6 @@ def login_user():
 @app.route('/api/auth/logout', methods = ['POST'])
 def logout_user():
 
-    #confirm whether a user has been logged out from login
     logout_user = {'username':request.json['username']}
     logged_out.append(logout_user)
 
@@ -46,7 +43,6 @@ def logout_user():
 @app.route('/api/auth/reset-password', methods = ['POST'])
 def reset_password():
 
-    #update the existing password
     password_reset = {'password':request.json['password']}
     updated_passwords.append(password_reset)
 
@@ -80,8 +76,6 @@ def delete_event(eventId):
     return jsonify({"events":events})
 
 
-
-
 #retrieves all events
 @app.route('/api/events', methods = ['GET'])
 def retrieve_all_events():
@@ -104,7 +98,7 @@ def rsvp_event(eventId):
 
     return jsonify({"RSVP":RSVP})
 
-#retrieves all guests
+#retrieves all Reserved guests
 @app.route('/api/event/<eventId>/rsvp', methods = ['GET'])
 def retrieve_all_guests(eventId):
     return jsonify({"RSVP":RSVP})
