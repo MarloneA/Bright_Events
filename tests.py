@@ -1,34 +1,8 @@
 import unittest
 
-
-
 class TestSuperClass(unittest.TestCase):
 
     def test_return(self):
-        return ""
-
-class  TestApp(TestSuperClass):
-
-    def test_app_exists(self):
-        """
-        Test wether the app exists
-        """
-        self.assertFalse(current_app is None)
-
-class TestModels(TestSuperClass):
-
-    def test_user_model(self):
-        """
-        Test mumber of users created
-        """
-
-        return ""
-
-    def test_event_model(self):
-        """
-        Test number of events created
-        """
-
         return ""
 
 
