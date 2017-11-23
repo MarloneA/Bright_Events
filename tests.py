@@ -12,7 +12,7 @@ class TestEndpoints(TestSuperClass):
         """
         Test that API endpoint sends in registration details
         """
-        return ""
+
 
     def test_login(self):
         """
