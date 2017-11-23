@@ -1,36 +1,67 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+users = []
+user = {}
+events = []
+event = {}
+
+
+#create a new user
 @app.route('/api/auth/register', methods = ['POST'])
 def create_user():
-    return jsonify({'message':'registration succesful'})
+
+    #creates a new user and adds them to the list of users
+
+    user = request.get_json()
+    users.append(user)
+    return jsonify(users)
+
 
 #login a user
 @app.route('/api/auth/login', methods = ['POST'])
 def login_user():
-    return jsonify({'message':'user logged in'})
+
+    #confirm if a user is in the list of users
+    return ""
+
 
 #logs out a user
 @app.route('/api/auth/login', methods = ['POST'])
 def logout_user():
-    return jsonify({'message':'user logged out'})
+
+    #confirm whether a user has been deleted from login
+    return ""
 
 #resets password
 @app.route('/api/auth/reset-password', methods = ['POST'])
 def reset_password():
-    return jsonify({'message':'password reset'})
 
+    #update the existing password
+    return ""
 
 #creates an event
 @app.route('/api/events', methods = ['POST'])
 def create_event():
-    return jsonify({'message':'event created'})
+
+    event = request.get_json()
+    events.append(event)
+    return jsonify(events)
 
 #updates an event
 @app.route('/api/events/<eventId>', methods = ['PUT'])
 def update_event(eventId):
-    return jsonify({'message':'event updated'})
+
+    data = request.get_json()
+    #update an existing event
+    for event in events:
+        if event["name"] == eventId:
+
+            event = data
+            events.append(event)
+            return jsonify(event)
+
 
 #deletes an event
 @app.route('/api/events/<eventId>', methods = ['DELETE'])
