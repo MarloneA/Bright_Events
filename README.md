@@ -1,3 +1,10 @@
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - python:
+
 # Bright_Events
 
  Bright Events is a platform where event organizers can create and manage different types of events.
