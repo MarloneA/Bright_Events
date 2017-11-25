@@ -1,14 +1,9 @@
+"""Simple Flask API"""
+
 from flask import Flask, jsonify, request
+from models import users, events, logged_in, logged_out, updated_passwords, RSVP
 
 app = Flask(__name__)
-
-users = [{"name":"Marlone", "email":"mar1@gmail.com"}, {"name":"Pres", "email":"pres911@gmail.com"}]
-events = [{"title":"Rumba", "category":"dance"}, {"title":"Flamenco", "category":"mariachi"}]
-logged_in = [{"name":"Brian"}, {"name":"Ryu"}, {"name":"Rio"}]
-logged_out = [{"name":"Sheila"}, {"name":"Lisa"}, {"name":"Jane"}]
-updated_passwords = [{"password":"123"}, {"password":"654"}, {"password":"grunt2117"}]
-RSVP = [{"name":"Uno"}, {"name":"miho"}, {"name":"punto"}]
-
 
 #create a new user
 @app.route('/api/auth/register', methods=['POST'])
@@ -71,13 +66,14 @@ def create_event():
     return jsonify({"events":events})
 
 #updates an event
-@app.route('/api/events/<eventId>', methods=['PUT'])
+@app.route('/api/events/<string:eventId>', methods=['PUT'])
 def update_event(eventId):
     """
     Updates an Event
     """
 
-    event = [event for event in events if event["title"] == eventId]
+    event = [evnt for evnt in events if evnt["title"] == eventId]
+    print event
     event[0]["title"] = request.json["title"]
 
     return jsonify({"events":event[0]})
@@ -111,9 +107,10 @@ def rsvp_event(eventId):
     Allows a user to RSVP to an event
     """
 
-    reserved_guests = {'name':request.json['name'], 'event':request.json['event']}
-    RSVP.append(reserved_guests)
-
+    for user in users:
+        if user['name'] == eventId:
+            reserved_guests = {'name':eventId, 'event':request.json['event']}
+            RSVP.append(reserved_guests)
     return jsonify({"RSVP":RSVP})
 
 
