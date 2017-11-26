@@ -7,6 +7,8 @@
 
 # Build Status
 
+[![Build Status](https://travis-ci.org/MarloneA/Bright_Events.svg?branch=master)](https://travis-ci.org/MarloneA/Bright_Events)
+
 # Code style
 
 # Framework used
