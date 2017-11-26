@@ -21,7 +21,7 @@ Built with
 
 - Clone repository to local machine
 - install dependencies from the requirements.txt
-- cd .. api_1_0
+- cd .. app
 - run python api.py
 
 # API reference
@@ -30,7 +30,7 @@ Built with
 
 # Contribute
 
-The API is built using Python Flask, the project file can be found inside the /api_1_0 directory.Go  through the Installation process then Open a pull request with your development branch improvements.
+The API is built using Python Flask, the project file can be found inside the /app directory.Go  through the Installation process above then Open a pull request with your improvements on development branch.
 
 # License
 
