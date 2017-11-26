@@ -1,5 +1,6 @@
-[![Coverage Status](https://coveralls.io/repos/github/MarloneA/Bright_Events/badge.svg?branch=master)](https://coveralls.io/github/MarloneA/Bright_Events?branch=master)
+[![Build Status](https://travis-ci.org/MarloneA/Bright_Events.svg?branch=master)](https://travis-ci.org/MarloneA/Bright_Events)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
+[![Coverage Status](https://coveralls.io/repos/github/MarloneA/Bright_Events/badge.svg?branch=master)](https://coveralls.io/github/MarloneA/Bright_Events?branch=master)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
 
 # Bright_Events
@@ -8,9 +9,6 @@
  The platform also allows Users to to create accounts so that they can view, reserve edit and delete events
  they intend to attend
 
-# Build Status
-
-[![Build Status](https://travis-ci.org/MarloneA/Bright_Events.svg?branch=master)](https://travis-ci.org/MarloneA/Bright_Events)
 
 # Framework used
 
