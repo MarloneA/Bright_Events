@@ -29,7 +29,7 @@ Built with
 
 # Contribute
 
-The API is built using Python Flask, the project file can be found inside the /app directory.Go  through the Installation process above then Open a pull request with your improvements on development branch.
+The API is built using Python Flask, the project file can be found inside the /app directory. Go  through the Installation process above then Open a pull request with your improvements on development branch.
 
 # License
 
