@@ -1,6 +1,4 @@
 
-<a href="https://codeclimate.com/github/codeclimate/codeclimate/test_coverage"><img src="https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage" /></a>
-
 # Bright_Events
 
  Bright Events is a platform where event organizers can create and manage different types of events.
