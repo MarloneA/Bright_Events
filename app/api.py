@@ -11,7 +11,7 @@ def create_user():
     """
     Creates a user account
     """
-    user = {'name':request.json['name'], 'email':request.json['email']}
+    user = {'id':request.json['id'], 'name':request.json['name'], 'email':request.json['email'], 'password':request.json['password']}
     users.append(user)
 
     return jsonify({"users":users})
@@ -23,7 +23,12 @@ def login_user():
     Logs in a user
     """
 
-    log = {'username':request.json['username']}
+    log = {'email':request.json['email']}
+
+    current_users = [user for user in users if user['email'] == request.json['email']]
+     
+    if current_users == []:
+        return jsonify({"message":"No user found with the given email"})
     logged_in.append(log)
 
     return jsonify({"logged_in":logged_in})
@@ -60,7 +65,7 @@ def create_event():
     Creates an Event
     """
 
-    event = {'title':request.json['title'], 'category':request.json['category']}
+    event = {'id':35, 'title':request.json['title'], 'category':request.json['category']}
     events.append(event)
 
     return jsonify({"events":events})
@@ -73,7 +78,10 @@ def update_event(eventId):
     """
 
     event = [evnt for evnt in events if evnt["title"] == eventId]
-    print event
+
+    if event == []:
+        return jsonify({"message":"No such event found"})
+
     event[0]["title"] = request.json["title"]
 
     return jsonify({"events":event[0]})
@@ -85,7 +93,12 @@ def delete_event(eventId):
     Deletes an event
     """
 
+
     event = [event for event in events if event["title"] == eventId]
+
+    if event == []:
+        return jsonify({"message":"No such event found"})
+
     events.remove(event[0])
 
     return jsonify({"events":events})
