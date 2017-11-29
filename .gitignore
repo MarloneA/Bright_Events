@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-../designs/venv/
-=======
 /venv
->>>>>>> fdf66fe7803f46ba7402de3d5c00cf83ac1a8b30
 .DS_Store
 *.pyc
