@@ -1,9 +1,12 @@
 """Simple Flask API"""
 
-from flask import Flask, jsonify, request
-from models import users, events, logged_users
+from flask import Flask, jsonify, request, session
+from data import users, events, logged_users
+from models import User, Event
+
 
 app = Flask(__name__)
+
 
 #create a new user
 @app.route('/api/auth/register', methods=['POST'])
@@ -12,45 +15,45 @@ def create_user():
     Creates a user account
     """
 
-    user = {'id':request.json['id'], 'name':request.json['name'], 'email':request.json['email'], 'password':request.json['password']}
+    user_id = request.json['id']
+    name = request.json['name']
+    email = request.json['email']
+    password = request.json['password']
+    rsvp = request.json['rsvp']
+
+    user = User(user_id, name, email, password, rsvp )
     users.append(user)
 
     return jsonify({"message":"registration succesful"})
 
 #login a user
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['GET', 'POST'])
 def login_user():
     """
     Logs in a user
     """
 
-    log = {'email':request.json['email']}
+    if request.method == 'POST':
 
-    current_users = [user for user in users if user['email'] == request.json['email'] and user['password'] == request.json['password']]
+        for user in users:
+            if user['email'] == request.json['email'] and user['password'] == request.json['password']:
 
-    if current_users == []:
-        return jsonify({"message":"Please verify email/password credentials are correct"})
-    logged_users.append(log)
+                session['user'] = request.json['email']
 
-    return jsonify({"message":"user has been logged in"})
+                return jsonify({"message":"user has been logged in"})
+
+            return jsonify({"message":"Please verify email/password credentials are correct"})
+
 
 
 #logs out a user
-@app.route('/api/auth/logout', methods=['POST'])
+@app.route('/api/auth/logout', methods=['GET', 'POST'])
 def logout_user():
     """
     Logs out a user
     """
 
-    log = {'email':request.json['email']}
-    log_info = [user for user in logged_users if user['email'] == request.json['email']]
-
-    if log_info == []:
-        return jsonify({"message":"You need to be logged in first"})
-
-    logged_users.remove(log)
-
-    return jsonify({"message":"user has been logged out"})
+    return ""
 
 #resets password
 @app.route('/api/auth/reset-password', methods=['PUT'])
@@ -66,7 +69,7 @@ def reset_password():
 
     user[0]["password"] = request.json["password"]
 
-    return jsonify({"events":"password updated"})
+    return jsonify({"message":"password updated"})
 
 
 #creates an event
@@ -76,7 +79,14 @@ def create_event():
     Creates an Event
     """
 
-    event = {'id':35, 'title':request.json['title'], 'category':request.json['category'], 'location':request.json["location"]}
+    event_id = request.json['id']
+    title = request.json['title']
+    category = request.json['category']
+    location = request.json['location']
+    description = request.json['description']
+
+    event = Event(event_id, title, category, location, description)
+
     events.append(event)
 
     return jsonify({"message ":"new event has been created"})
