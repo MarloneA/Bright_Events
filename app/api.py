@@ -11,10 +11,11 @@ def create_user():
     """
     Creates a user account
     """
+
     user = {'id':request.json['id'], 'name':request.json['name'], 'email':request.json['email'], 'password':request.json['password']}
     users.append(user)
 
-    return jsonify({"users":users})
+    return jsonify({  "message":"registration succesful"})
 
 #login a user
 @app.route('/api/auth/login', methods=['POST'])
@@ -25,13 +26,13 @@ def login_user():
 
     log = {'email':request.json['email']}
 
-    current_users = [user for user in users if user['email'] == request.json['email']]
-     
-    if current_users == []:
-        return jsonify({"message":"No user found with the given email"})
-    logged_in.append(log)
+    current_users = [user for user in users if user['email'] == request.json['email'] and user['password'] == request.json['password']]
 
-    return jsonify({"logged_in":logged_in})
+    if current_users == []:
+        return jsonify({"message":"Please verify email/password credentials are correct"})
+    logged_users.append(log)
+
+    return jsonify({"message":"user has been logged in"})
 
 
 #logs out a user
@@ -41,10 +42,11 @@ def logout_user():
     Logs out a user
     """
 
-    logout = {'username':request.json['username']}
-    logged_out.append(logout)
 
-    return jsonify({"logged_out":logged_out})
+    log = {'email':request.json['email']}
+    logged_users.remove(log)
+
+    return jsonify({"message":"user has been logged out"})
 
 #resets password
 @app.route('/api/auth/reset-password', methods=['POST'])
