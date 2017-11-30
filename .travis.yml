@@ -10,11 +10,7 @@ install:
 
 # command to run tests
 script: true
-<<<<<<< HEAD
-  - nosetests  --with-coverage --cover-package=app/tests
-=======
-  #- nosetests  --with-coverage
->>>>>>> development
+  - nosetests --with-coverage --cover-package=app
 
 after_script:
   - coveralls

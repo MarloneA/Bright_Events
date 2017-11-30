@@ -160,7 +160,7 @@ def rsvp_event(eventId):
     Allows a user to RSVP to an event
     """
 
-    check_usr = [usr for usr in users if usr["name"] == eventId]
+    check_usr = [usr for usr in users if usr['name'] == eventId]
 
     if check_usr == []:
         return jsonify({"message":"user not found"}), 404
