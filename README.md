@@ -24,11 +24,15 @@ Built with
 
 # API reference
 
+The api documentation is hosted as the homepage
+of the application. Reference material for the API can be found at [API](https://brightevents.docs.apiary.io)
 
+## Live Application
+This API is hosted [here](https://andela-brightevents.herokuapp.com/) on [heroku](heroku.com)
 
 # Contribute
 
-The API is built using Python Flask, the project file can be found inside the /app directory. Go  through the Installation process above then Open a pull request with your improvements on development branch.
+The API is built using Python Flask, the project file can be found inside the app directory. Go  through the Installation process above then Open a pull request with your improvements on development branch.
 
 # License
 

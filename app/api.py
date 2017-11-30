@@ -64,7 +64,6 @@ def logout_user():
     try:
         if session['user'] is not None:
             session.pop('user')
-            print session
 
     except KeyError:
         return jsonify({"message":"no user in session"})
@@ -166,6 +165,7 @@ def rsvp_event(eventId):
         return jsonify({"message":"user not found"}), 404
 
     check_usr[0]["rsvp"] = True
+    check_usr[0]["event"] = eventId
 
     return jsonify({"message":"your reservations have been approved"})
 
