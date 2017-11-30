@@ -1,0 +1,6 @@
+
+/venv
+
+*.pyc
+.coverage
+*.DS_Store

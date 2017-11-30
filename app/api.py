@@ -1,9 +1,16 @@
 """Simple Flask API"""
 
-from flask import Flask, jsonify, request
-from models import users, events, logged_users
+from flask import Flask, jsonify, request, session
+from data import users, events, logged_users
+from models import User, Event
+import os
+
+
 
 app = Flask(__name__)
+
+app.secret_key = os.urandom(24)
+
 
 #create a new user
 @app.route('/api/auth/register', methods=['POST'])
@@ -12,45 +19,57 @@ def create_user():
     Creates a user account
     """
 
-    user = {'id':request.json['id'], 'name':request.json['name'], 'email':request.json['email'], 'password':request.json['password']}
-    users.append(user)
+    user_id = request.json['id']
+    name = request.json['name']
+    email = request.json['email']
+    password = request.json['password']
+    rsvp = request.json['rsvp']
 
-    return jsonify({"message":"registration succesful"})
+    user = User(user_id, name, email, password, rsvp )
+
+    new = {"user":user.name, "email":user.email, "password":user.password,"rsvp": user.rsvp}
+
+
+    users.append(new)
+
+    return jsonify({"message":"new user has been created","user":new})
 
 #login a user
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['GET', 'POST'])
 def login_user():
     """
     Logs in a user
     """
 
-    log = {'email':request.json['email']}
+    if request.method == 'POST':
 
-    current_users = [user for user in users if user['email'] == request.json['email'] and user['password'] == request.json['password']]
+        for user in users:
+            if user['email'] == request.json['email'] and user['password'] == request.json['password']:
 
-    if current_users == []:
-        return jsonify({"message":"Please verify email/password credentials are correct"})
-    logged_users.append(log)
+                session['user'] = request.json['email']
 
-    return jsonify({"message":"user has been logged in"})
+                return jsonify({"message":"user has been logged in"})
+
+            return jsonify({"message":"Please verify email/password credentials are correct"})
+
 
 
 #logs out a user
-@app.route('/api/auth/logout', methods=['POST'])
+@app.route('/api/auth/logout', methods=['GET', 'POST'])
 def logout_user():
     """
     Logs out a user
     """
 
-    log = {'email':request.json['email']}
-    log_info = [user for user in logged_users if user['email'] == request.json['email']]
+    try:
+        if session['user'] is not None:
+            session.pop('user')
+            print session
 
-    if log_info == []:
-        return jsonify({"message":"You need to be logged in first"})
+    except KeyError:
+        return jsonify({"message":"no user in session"})
 
-    logged_users.remove(log)
-
-    return jsonify({"message":"user has been logged out"})
+    return jsonify({"message":"User has been logged out"})
 
 #resets password
 @app.route('/api/auth/reset-password', methods=['PUT'])
@@ -62,11 +81,11 @@ def reset_password():
     user = [usr for usr in users if usr["email"] == request.json["email"]]
 
     if user == []:
-        return jsonify({"message":"The user does not exist"})
+        return jsonify({"message":"The user does not exist"}), 404
 
     user[0]["password"] = request.json["password"]
 
-    return jsonify({"events":"password updated"})
+    return jsonify({"message":"password updated"})
 
 
 #creates an event
@@ -76,7 +95,14 @@ def create_event():
     Creates an Event
     """
 
-    event = {'id':35, 'title':request.json['title'], 'category':request.json['category'], 'location':request.json["location"]}
+    event_id = request.json['id']
+    title = request.json['title']
+    category = request.json['category']
+    location = request.json['location']
+    description = request.json['description']
+
+    event = Event(event_id, title, category, location, description)
+
     events.append(event)
 
     return jsonify({"message ":"new event has been created"})
@@ -91,7 +117,7 @@ def update_event(eventId):
     event = [evnt for evnt in events if evnt["id"] == eventId]
 
     if event == []:
-        return jsonify({"message":"No such event found"})
+        return jsonify({"message":"No such event found"}), 404
 
     event[0]["title"] = request.json["title"]
     event[0]["location"] = request.json["location"]
@@ -111,7 +137,7 @@ def delete_event(eventId):
     event = [event for event in events if event["id"] == eventId]
 
     if event == []:
-        return jsonify({"message":"No such event found"})
+        return jsonify({"message":"No such event found"}), 404
 
     events.remove(event[0])
 
@@ -134,10 +160,10 @@ def rsvp_event(eventId):
     Allows a user to RSVP to an event
     """
 
-    check_usr = [usr for usr in users if usr['name'] == eventId]
+    check_usr = [usr for usr in users if usr["name"] == eventId]
 
     if check_usr == []:
-        return jsonify({"message":"user not found"})
+        return jsonify({"message":"user not found"}), 404
 
     check_usr[0]["rsvp"] = True
 
