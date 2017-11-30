@@ -3,9 +3,13 @@
 from flask import Flask, jsonify, request, session
 from data import users, events, logged_users
 from models import User, Event
+import os
+
 
 
 app = Flask(__name__)
+
+app.secret_key = os.urandom(24)
 
 
 #create a new user
@@ -22,9 +26,13 @@ def create_user():
     rsvp = request.json['rsvp']
 
     user = User(user_id, name, email, password, rsvp )
-    users.append(user)
 
-    return jsonify({"message":"registration succesful"})
+    new = {"user":user.name, "email":user.email, "password":user.password,"rsvp": user.rsvp}
+
+
+    users.append(new)
+
+    return jsonify({"message":"new user has been created","user":new})
 
 #login a user
 @app.route('/api/auth/login', methods=['GET', 'POST'])
@@ -53,7 +61,15 @@ def logout_user():
     Logs out a user
     """
 
-    return ""
+    try:
+        if session['user'] is not None:
+            session.pop('user')
+            print session
+
+    except KeyError:
+        return jsonify({"message":"no user in session"})
+
+    return jsonify({"message":"User has been logged out"})
 
 #resets password
 @app.route('/api/auth/reset-password', methods=['PUT'])
@@ -65,7 +81,7 @@ def reset_password():
     user = [usr for usr in users if usr["email"] == request.json["email"]]
 
     if user == []:
-        return jsonify({"message":"The user does not exist"})
+        return jsonify({"message":"The user does not exist"}), 404
 
     user[0]["password"] = request.json["password"]
 
@@ -101,7 +117,7 @@ def update_event(eventId):
     event = [evnt for evnt in events if evnt["id"] == eventId]
 
     if event == []:
-        return jsonify({"message":"No such event found"})
+        return jsonify({"message":"No such event found"}), 404
 
     event[0]["title"] = request.json["title"]
     event[0]["location"] = request.json["location"]
@@ -121,7 +137,7 @@ def delete_event(eventId):
     event = [event for event in events if event["id"] == eventId]
 
     if event == []:
-        return jsonify({"message":"No such event found"})
+        return jsonify({"message":"No such event found"}), 404
 
     events.remove(event[0])
 
@@ -147,7 +163,7 @@ def rsvp_event(eventId):
     check_usr = [usr for usr in users if usr['name'] == eventId]
 
     if check_usr == []:
-        return jsonify({"message":"user not found"})
+        return jsonify({"message":"user not found"}), 404
 
     check_usr[0]["rsvp"] = True
 
