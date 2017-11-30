@@ -24,7 +24,7 @@ Built with
 
 # API reference
 
-
+Reference material for the API can be found at [API](brightevents.docs.apiary.io)
 
 # Contribute
 
