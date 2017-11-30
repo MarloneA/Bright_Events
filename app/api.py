@@ -13,7 +13,7 @@ app.secret_key = os.urandom(24)
 
 
 #create a new user
-@app.route('/api/auth/register', methods=['POST'])
+@app.route('/api/v1/auth/register', methods=['POST'])
 def create_user():
     """
     Creates a user account
@@ -35,7 +35,7 @@ def create_user():
     return jsonify({"message":"new user has been created","user":new})
 
 #login a user
-@app.route('/api/auth/login', methods=['GET', 'POST'])
+@app.route('/api/v1/auth/login', methods=['GET', 'POST'])
 def login_user():
     """
     Logs in a user
@@ -55,7 +55,7 @@ def login_user():
 
 
 #logs out a user
-@app.route('/api/auth/logout', methods=['GET', 'POST'])
+@app.route('/api/v1/auth/logout', methods=['GET', 'POST'])
 def logout_user():
     """
     Logs out a user
@@ -72,7 +72,7 @@ def logout_user():
     return jsonify({"message":"User has been logged out"})
 
 #resets password
-@app.route('/api/auth/reset-password', methods=['PUT'])
+@app.route('/api/v1/auth/reset-password', methods=['PUT'])
 def reset_password():
     """
     Resets password
@@ -89,7 +89,7 @@ def reset_password():
 
 
 #creates an event
-@app.route('/api/events', methods=['POST'])
+@app.route('/api/v1/events', methods=['POST'])
 def create_event():
     """
     Creates an Event
@@ -108,7 +108,7 @@ def create_event():
     return jsonify({"message ":"new event has been created"})
 
 #updates an event
-@app.route('/api/events/<string:eventId>', methods=['PUT'])
+@app.route('/api/v1/events/<string:eventId>', methods=['PUT'])
 def update_event(eventId):
     """
     Updates an Event
@@ -127,7 +127,7 @@ def update_event(eventId):
     return jsonify({"message":"event has been succesfully updated"})
 
 #deletes an event
-@app.route('/api/events/<eventId>', methods=['DELETE'])
+@app.route('/api/v1/events/<eventId>', methods=['DELETE'])
 def delete_event(eventId):
     """
     Deletes an event
@@ -145,7 +145,7 @@ def delete_event(eventId):
 
 
 #retrieves all events
-@app.route('/api/events', methods=['GET'])
+@app.route('/api/v1/events', methods=['GET'])
 def retrieve_events():
     """
     Retrieves all events
@@ -154,7 +154,7 @@ def retrieve_events():
     return jsonify({"events":events})
 
 #allows a user to RSVP
-@app.route('/api/event/<eventId>/rsvp', methods=['POST'])
+@app.route('/api/v1/event/<eventId>/rsvp', methods=['POST'])
 def rsvp_event(eventId):
     """
     Allows a user to RSVP to an event
@@ -170,7 +170,7 @@ def rsvp_event(eventId):
     return jsonify({"message":"your reservations have been approved"})
 
 #Retrieves a list of users who have reserved for an event
-@app.route('/api/events/rsvp', methods=['GET'])
+@app.route('/api/v1/events/rsvp', methods=['GET'])
 def rsvp_guests():
     """
     Retrieves a list of users who have event reservations
