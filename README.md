@@ -28,7 +28,7 @@ The api documentation is hosted as the homepage
 of the application. Reference material for the API can be found at [API](https://brightevents.docs.apiary.io)
 
 ## Live Application
-This API is hosted [here](https://andela-brightevents.herokuapp.com/) on [heroku](heroku.com)
+This API is hosted [here](https://andela-brightevents.herokuapp.com/) on [heroku](https://heroku.com)
 
 # Contribute
 
