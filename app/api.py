@@ -1,8 +1,8 @@
 """Simple Flask API"""
 
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, render_template
 from data import users, events, logged_users
-from models import User, Event
+from app.models import User, Event
 import os
 
 
@@ -10,6 +10,11 @@ import os
 app = Flask(__name__)
 
 app.secret_key = os.urandom(24)
+
+#view api docs in heroku
+@app.route('/')
+def index():
+	return render_template('api_doc.html')
 
 
 #create a new user
@@ -64,7 +69,6 @@ def logout_user():
     try:
         if session['user'] is not None:
             session.pop('user')
-            print session
 
     except KeyError:
         return jsonify({"message":"no user in session"})
