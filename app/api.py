@@ -1,6 +1,6 @@
 """Simple Flask API"""
 
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, render_template
 from data import users, events, logged_users
 from models import User, Event
 import os
@@ -10,6 +10,11 @@ import os
 app = Flask(__name__)
 
 app.secret_key = os.urandom(24)
+
+#view api docs in heroku
+@app.route('/')
+def index():
+	return render_template('api_doc.html')
 
 
 #create a new user
@@ -165,7 +170,6 @@ def rsvp_event(eventId):
         return jsonify({"message":"user not found"}), 404
 
     check_usr[0]["rsvp"] = True
-    check_usr[0]["event"] = eventId
 
     return jsonify({"message":"your reservations have been approved"})
 
