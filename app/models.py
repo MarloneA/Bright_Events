@@ -1,4 +1,4 @@
-from app.data import users, events
+from data import users, events
 
 class User():
 

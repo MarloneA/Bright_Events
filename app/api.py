@@ -1,7 +1,7 @@
 """Simple Flask API"""
 
 from flask import Flask, jsonify, request, session, render_template
-from app.data import users, events, logged_users
+from data import users, events, logged_users
 from app.models import User, Event
 import os
 
