@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from models import User, Event
 
 app = Flask(__name__)
 
@@ -12,6 +11,35 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+#MODELs
+
+class User(db.Model):
+    """
+    Table Schema
+    """
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50))
+    email = db.Column(db.String(50))
+    password = db.Column(db.String(50))
+
+
+class Event(db.Model):
+    """
+    Table Schema
+    """
+
+    __tablename__ = "events"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(50))
+    category = db.Column(db.String(50))
+    location = db.Column(db.String(50))
+    description = db.Column(db.String)
+
+
 
 db.create_all()
 #API Routes
@@ -157,7 +185,7 @@ def retrieve_events():
 @app.route('/api/events/<eventId>', methods=['GET'])
 def get_one_event(eventId):
 
-    event = Event.query.filter_by(id=eventId).first()
+    event = Event.query.filter_by(title=eventId).first()
 
     if not event:
         return jsonify({'message' : 'The requested event was not found!'}), 404
@@ -196,7 +224,6 @@ def rsvp_guests():
     """
 
     return ""
-
 
 
 if __name__ == '__main__':
