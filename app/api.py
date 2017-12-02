@@ -16,7 +16,7 @@ migrate = Migrate(app, db)
 
 class User(db.Model):
     """
-    Table Schema
+    User Table Schema
     """
     __tablename__ = "users"
 
@@ -28,7 +28,7 @@ class User(db.Model):
 
 class Event(db.Model):
     """
-    Table Schema
+    Event Table Schema
     """
 
     __tablename__ = "events"
@@ -47,30 +47,49 @@ db.create_all()
 #create a new user
 @app.route('/api/auth/register', methods=['POST'])
 def create_user():
-    """
-    Creates a user account
-    """
+	"""
+	Creates a user account
+	"""
 
-    data = request.get_json()
-    hashed_password = generate_password_hash(data['password'], method='sha256')
+	data = request.get_json()
+	hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_user = User(name=data['name'], email=data['email'], password=hashed_password)
 
-    db.session.add(new_user)
-    db.session.commit()
+	if data['name'] == "" or data['email'] == "" or data['password'] == "":
 
-    users = User.query.all()
+		return jsonify({"message":"Empty field detected please fill all fields"})
 
-    output = []
+	if "@" in data["email"] == False:
 
-    for user in users:
-        user_data = {}
-        user_data['name'] = user.name
-        user_data['email'] = user.email
-        user_data['password'] = user.password
-        output.append(user_data)
+		return jsonify({"message":"Enter a valid email address"})
 
-    return jsonify({"message":output})
+	if type(data['name']) == 'int':
+
+		return jsonify({"message":"Enter a valid Name"})
+
+	if len(data['password']) < 4:
+
+		return jsonify({"message":"password should be at least 4 characters"})
+	else:
+
+		new_user = User(name=data['name'], email=data["email"], password=hashed_password)
+
+		db.session.add(new_user)
+		db.session.commit()
+
+		users = User.query.all()
+
+		output = []
+
+		for user in users:
+			user_data = {}
+			user_data['id'] = user.id
+			user_data['name'] = user.name
+			user_data['email'] = user.email
+			user_data['password'] = user.password
+			output.append(user_data)
+
+		return jsonify({"message":output})
 
 
 #login a user
