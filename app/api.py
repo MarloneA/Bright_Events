@@ -30,17 +30,18 @@ class User(db.Model):
 
 
 class Event(db.Model):
-    """
-    Event Table Schema
-    """
+	"""
+	Event Table Schema
+	"""
 
-    __tablename__ = "events"
+	__tablename__ = "events"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(50))
-    category = db.Column(db.String(50))
-    location = db.Column(db.String(50))
-    description = db.Column(db.String)
+	id = db.Column(db.Integer, primary_key=True)
+	event_id = db.Column(db.String(50), unique=True)
+	title = db.Column(db.String(50))
+	category = db.Column(db.String(50))
+	location = db.Column(db.String(50))
+	description = db.Column(db.String)
 
 
 
