@@ -225,6 +225,34 @@ def rsvp_guests():
 
     return ""
 
+#filter by category
+@app.route('api/events/<category>', methods=['GET'])
+def filter_by(category):
 
+	event = Event.query.filter_by(category=category).first()
+
+	filter_data = {}
+    filter_data['id'] = event.id
+    filter_data['title'] = event.title
+    filter_data['category'] = event.category
+    filter_data['location'] = event.location
+    filter_data['description'] = event.description
+
+	return jsonify(search_data)
+
+#filter by location
+@app.route('api/events/<location>', methods=['GET'])
+def filter_by(category):
+
+	event = Event.query.filter_by(location=location).first()
+
+	filter_data = {}
+    filter_data['id'] = event.id
+    filter_data['title'] = event.title
+    filter_data['category'] = event.category
+    filter_data['location'] = event.location
+    filter_data['description'] = event.description
+
+	return jsonify(search_data)
 if __name__ == '__main__':
     app.run(debug=True)
