@@ -17,10 +17,32 @@ Built with
 
 # Installation
 
-- Clone repository to local machine
-- install dependencies from the requirements.txt
-- cd .. app
-- run python api.py
+Clone the repository locally:
+
+`$ git clone [URL]`
+
+Create a virtual environment and activate it:
+ ```
+ $ cd Bright_Events
+ $ virtualenv env
+ $ source env/bin/activate
+ ```
+
+Install the application dependencies:
+
+`$ pip install -r requirements.txt`
+
+Export Flask variables:
+
+ ```
+ $ export FLASK_CONFIG=development`
+ $ export FLASK_APP=run.py
+ ```
+
+Run the application:
+
+`$ flask run`
+
 
 # API reference
 
@@ -28,12 +50,12 @@ The api documentation is hosted as the homepage
 of the application. Reference material for the API can be found at [API](https://brightevents.docs.apiary.io)
 
 ## Live Application
-This API is hosted [here](https://andela-brightevents.herokuapp.com/) on [heroku](https://heroku.com)
+The Live API is hosted [here](https://andela-brightevents.herokuapp.com/) on [heroku](https://heroku.com)
 
 # Contribute
 
-The API is built using Python Flask, the project file can be found inside the app directory. Go  through the Installation process above then Open a pull request with your improvements on development branch.
+To contribute to the project, create a Pull Request on a feature branch from develop. 
 
 # License
 
-MIT © Marlone
+MIT © 2017 Marlone Akidiva
