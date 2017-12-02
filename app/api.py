@@ -1,7 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+import jwt
+import datetime
 
 app = Flask(__name__)
 
@@ -15,15 +17,16 @@ migrate = Migrate(app, db)
 #MODELs
 
 class User(db.Model):
-    """
-    User Table Schema
-    """
-    __tablename__ = "users"
+	"""
+	User Table Schema
+	"""
+	__tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50))
-    email = db.Column(db.String(50))
-    password = db.Column(db.String(50))
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	public_id = db.Column(db.String(50), unique=True)
+	name = db.Column(db.String(50))
+	email = db.Column(db.String(50))
+	password = db.Column(db.String(50))
 
 
 class Event(db.Model):
@@ -95,11 +98,22 @@ def create_user():
 #login a user
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    """
-    Login a User
-    """
+	auth = request.get_json()
 
-    return ""
+	if not auth or auth['email'] == "" or auth['password'] == "":
+		return jsonify({"message":"Could not verify"})
+	user = User.query.filter_by(email=auth["email"]).first()
+
+	if not user:
+		return jsonify({"message":"Could not verify"})
+
+	if check_password_hash(user.password, auth['password']):
+		token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
+
+		return jsonify({'token' : token.decode('UTF-8')})
+
+	return jsonify({"message":"Could not verify"})
+
 
 #logout a user
 @app.route('/api/auth/logout')
@@ -201,10 +215,10 @@ def retrieve_events():
     return jsonify({"Events":output})
 
 #search and retrieve a single event
-@app.route('/api/events/<eventId>', methods=['GET'])
-def get_one_event(eventId):
+@app.route('/api/events/<searchQuery>', methods=['GET'])
+def get_one_event(searchQuery):
 
-    event = Event.query.filter_by(title=eventId).first()
+    event = Event.query.filter_by(title=searchQuery).first()
 
     if not event:
         return jsonify({'message' : 'The requested event was not found!'}), 404
