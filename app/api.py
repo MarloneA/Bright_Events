@@ -1,192 +1,203 @@
-"""Simple Flask API"""
-
-from flask import Flask, jsonify, request, session, render_template
-from data import users, events, logged_users
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_migrate import Migrate
 from models import User, Event
-import os
-
-
 
 app = Flask(__name__)
 
-app.secret_key = os.urandom(24)
+app.config['SECRET_KEY'] = 'mysecretkey'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://marlone911:bev@localhost:5432/brightevents'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#view api docs in heroku
-@app.route('/')
-def index():
-	return render_template('api_doc.html')
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
+db.create_all()
+#API Routes
 
 #create a new user
-@app.route('/api/v1/auth/register', methods=['POST'])
+@app.route('/api/auth/register', methods=['POST'])
 def create_user():
     """
     Creates a user account
     """
 
-    user_id = request.json['id']
-    name = request.json['name']
-    email = request.json['email']
-    password = request.json['password']
-    rsvp = request.json['rsvp']
+    data = request.get_json()
+    hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    user = User(user_id, name, email, password, rsvp )
+    new_user = User(name=data['name'], email=data['email'], password=hashed_password)
 
-    new = {"user":user.name, "email":user.email, "password":user.password,"rsvp": user.rsvp}
+    db.session.add(new_user)
+    db.session.commit()
 
+    users = User.query.all()
 
-    users.append(new)
+    output = []
 
-    return jsonify({"message":"new user has been created","user":new})
+    for user in users:
+        user_data = {}
+        user_data['name'] = user.name
+        user_data['email'] = user.email
+        user_data['password'] = user.password
+        output.append(user_data)
+
+    return jsonify({"message":output})
+
 
 #login a user
-@app.route('/api/v1/auth/login', methods=['GET', 'POST'])
-def login_user():
+@app.route('/api/auth/login', methods=['POST'])
+def login():
     """
-    Logs in a user
+    Login a User
     """
 
-    if request.method == 'POST':
+    return ""
 
-        for user in users:
-            if user['email'] == request.json['email'] and user['password'] == request.json['password']:
-
-                session['user'] = request.json['email']
-
-                return jsonify({"message":"user has been logged in"})
-
-            return jsonify({"message":"Please verify email/password credentials are correct"})
-
-
-
-#logs out a user
-@app.route('/api/v1/auth/logout', methods=['GET', 'POST'])
-def logout_user():
+#logout a user
+@app.route('/api/auth/logout')
+def logout():
     """
     Logs out a user
     """
 
-    try:
-        if session['user'] is not None:
-            session.pop('user')
+    return ""
 
-    except KeyError:
-        return jsonify({"message":"no user in session"})
-
-    return jsonify({"message":"User has been logged out"})
-
-#resets password
-@app.route('/api/v1/auth/reset-password', methods=['PUT'])
+#reset-password
+@app.route('/api/auth/reset-password')
 def reset_password():
     """
     Resets password
     """
 
-    user = [usr for usr in users if usr["email"] == request.json["email"]]
+    return ""
 
-    if user == []:
-        return jsonify({"message":"The user does not exist"}), 404
+#create a new event
 
-    user[0]["password"] = request.json["password"]
-
-    return jsonify({"message":"password updated"})
-
-
-#creates an event
-@app.route('/api/v1/events', methods=['POST'])
+@app.route('/api/events', methods=['POST'])
 def create_event():
     """
-    Creates an Event
+    Creates an event
     """
 
-    event_id = request.json['id']
-    title = request.json['title']
-    category = request.json['category']
-    location = request.json['location']
-    description = request.json['description']
+    events = request.get_json()
 
-    event = Event(event_id, title, category, location, description)
+    new_event = Event(
+                        title=events['title'],
+                        category=events['category'],
+                        location=events['location'],
+                        description=events['description']
+                        )
+    db.session.add(new_event)
+    db.session.commit()
 
-    events.append(event)
+    return jsonify({"message":"new event has been created"})
 
-    return jsonify({"message ":"new event has been created"})
-
-#updates an event
-@app.route('/api/v1/events/<string:eventId>', methods=['PUT'])
+#Updates an event
+@app.route('/api/events/<string:eventId>', methods=['PUT'])
 def update_event(eventId):
     """
     Updates an Event
     """
 
-    event = [evnt for evnt in events if evnt["id"] == eventId]
+    event = Event.query.filter_by(id=eventId).first()
 
-    if event == []:
-        return jsonify({"message":"No such event found"}), 404
+    if not event:
+        return jsonify({'message' : 'The requested event was not found!'}), 404
 
-    event[0]["title"] = request.json["title"]
-    event[0]["location"] = request.json["location"]
-    event[0]["category"] = request.json["category"]
-    event[0]["description"] = request.json["description"]
+    event.title = request.json['title']
+    event.category = request.json['category']
+    event.location = request.json['location']
+    event.description = request.json['description']
+    db.session.commit()
 
-    return jsonify({"message":"event has been succesfully updated"})
+    return jsonify({'message' : 'The event has been updated!'})
 
 #deletes an event
-@app.route('/api/v1/events/<eventId>', methods=['DELETE'])
+@app.route('/api/events/<eventId>', methods=['DELETE'])
 def delete_event(eventId):
     """
     Deletes an event
     """
 
+    event = Event.query.filter_by(id=eventId).first()
 
-    event = [event for event in events if event["id"] == eventId]
+    if not event:
+        return jsonify({'message' : 'The requested event was not found!'}), 404
 
-    if event == []:
-        return jsonify({"message":"No such event found"}), 404
+    db.session.delete(event)
+    db.session.commit()
 
-    events.remove(event[0])
-
-    return jsonify({"message":"event successfully removed"})
-
+    return jsonify({'message' : 'The user has been deleted!'})
 
 #retrieves all events
-@app.route('/api/v1/events', methods=['GET'])
+@app.route('/api/events', methods=['GET'])
 def retrieve_events():
     """
-    Retrieves all events
+    Retrieves events
     """
 
-    return jsonify({"events":events})
+    Events = Event.query.all()
 
-#allows a user to RSVP
-@app.route('/api/v1/event/<eventId>/rsvp', methods=['POST'])
+    output = []
+
+    for event in Events:
+        event_data = {}
+        event_data['id'] = event.id
+        event_data['title'] = event.title
+        event_data['category'] = event.category
+        event_data['location'] = event.location
+        event_data['description'] = event.description
+        output.append(event_data)
+
+
+    return jsonify({"Events":output})
+
+#search and retrieve a single event
+@app.route('/api/events/<eventId>', methods=['GET'])
+def get_one_event(eventId):
+
+    event = Event.query.filter_by(id=eventId).first()
+
+    if not event:
+        return jsonify({'message' : 'The requested event was not found!'}), 404
+
+    search_data = {}
+    search_data['id'] = event.id
+    search_data['title'] = event.title
+    search_data['category'] = event.category
+    search_data['location'] = event.location
+    search_data['description'] = event.description
+
+    return jsonify(search_data)
+
+#Checks a user to the reserved events
+@app.route('/api/event/<eventId>/rsvp', methods=['PUT'])
 def rsvp_event(eventId):
     """
     Allows a user to RSVP to an event
     """
 
-    check_usr = [usr for usr in users if usr['name'] == eventId]
+    user = User.query.filter_by(name=eventId).first()
 
-    if check_usr == []:
-        return jsonify({"message":"user not found"}), 404
+    if not user:
+        return jsonify({'message' : 'No user found!'}),404
 
-    check_usr[0]["rsvp"] = True
+    user.rsvp = True
+    db.session.commit()
 
-    return jsonify({"message":"your reservations have been approved"})
+    return jsonify({'message' : 'The user has reserved for the event!'})
 
 #Retrieves a list of users who have reserved for an event
-@app.route('/api/v1/events/rsvp', methods=['GET'])
+@app.route('/api/events/rsvp', methods=['GET'])
 def rsvp_guests():
     """
     Retrieves a list of users who have event reservations
     """
-    reserved = [rsvp for rsvp in users if rsvp['rsvp'] == True]
 
-    if reserved == []:
-        return jsonify({'message' : 'No reservations found for the user'}), 404
+    return ""
 
 
-    return jsonify({"Guests":reserved})
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

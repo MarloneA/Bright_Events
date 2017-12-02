@@ -1,19 +1,26 @@
-from data import users, events
+#MODELs
 
-class User():
+class User(db.Model):
+    """
+    Table Schema
+    """
+    __tablename__ = "users"
 
-    def __init__(self, id, name, email, password, rsvp):
-        self.id=id
-        self.name=name
-        self.email=email
-        self.password=password
-        self.rsvp=rsvp
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50))
+    email = db.Column(db.String(50))
+    password = db.Column(db.String(50))
 
-class Event():
 
-    def __init__(self, id, title, category, location, description):
-        self.id=id
-        self.title=title
-        self.category=category
-        self.location=location
-        self.description=description
+class Event(db.Model):
+    """
+    Table Schema
+    """
+
+    __tablename__ = "events"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(50))
+    category = db.Column(db.String(50))
+    location = db.Column(db.String(50))
+    description = db.Column(db.String)
