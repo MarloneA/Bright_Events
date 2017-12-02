@@ -226,33 +226,50 @@ def rsvp_guests():
     return ""
 
 #filter by category
-@app.route('api/events/<category>', methods=['GET'])
-def filter_by(category):
+@app.route('/api/events/category/<category>', methods=['GET'])
+def filter_all_categories(category):
 
-	event = Event.query.filter_by(category=category).first()
+	event = Event.query.filter_by(category=category).all()
 
-	filter_data = {}
-    filter_data['id'] = event.id
-    filter_data['title'] = event.title
-    filter_data['category'] = event.category
-    filter_data['location'] = event.location
-    filter_data['description'] = event.description
+	if event != []:
 
-	return jsonify(search_data)
+		categories = []
+		for evnt in event:
+
+			filter_category = {}
+			filter_category['id'] = evnt.id
+			filter_category['title'] = evnt.title
+			filter_category['category'] = evnt.category
+			filter_category['location'] = evnt.location
+			filter_category['description'] = evnt.description
+			categories.append(filter_category)
+
+		return jsonify(categories)
+	else:
+		return jsonify({"message":"no events found for the category"})
 
 #filter by location
-@app.route('api/events/<location>', methods=['GET'])
-def filter_by(category):
+@app.route('/api/events/location/<location>', methods=['GET'])
+def filter_all_locations(location):
 
-	event = Event.query.filter_by(location=location).first()
+	event = Event.query.filter_by(location=location).all()
 
-	filter_data = {}
-    filter_data['id'] = event.id
-    filter_data['title'] = event.title
-    filter_data['category'] = event.category
-    filter_data['location'] = event.location
-    filter_data['description'] = event.description
+	if event != []:
 
-	return jsonify(search_data)
+		locations = []
+		for evnt in event:
+
+			filter_location = {}
+			filter_location['id'] = evnt.id
+			filter_location['title'] = evnt.title
+			filter_location['category'] = evnt.category
+			filter_location['location'] = evnt.location
+			filter_location['description'] = evnt.description
+			locations.append(filter_location)
+
+		return jsonify(locations)
+	else:
+		return jsonify({"message":"no events found for the chosen location"})
+
 if __name__ == '__main__':
     app.run(debug=True)
