@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify, request, session, render_template
 from data import users, events, logged_users
-from app.models import User, Event
+from models import User, Event
 import os
 
 
