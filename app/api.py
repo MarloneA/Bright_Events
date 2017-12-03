@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+from functools import wraps
 import jwt
 import datetime
 
@@ -48,6 +49,27 @@ class Event(db.Model):
 db.create_all()
 #API Routes
 
+#auth token
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+
+        if not token:
+            return jsonify({'message' : 'Token is missing!'}), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = User.query.filter_by(public_id=data['public_id']).first()
+        except:
+            return jsonify({'message' : 'Token is invalid!'}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
 #create a new user
 @app.route('/api/auth/register', methods=['POST'])
 def create_user():
@@ -117,27 +139,48 @@ def login():
 
 
 #logout a user
-@app.route('/api/auth/logout')
+@app.route('/api/auth/logout', methods=["POST"])
 def logout():
     """
     Logs out a user
     """
 
-    return ""
+    auth_header = request.headers.get('x-access-token')
+
+    if auth_header:
+
+        return jsonify({"message":"logout succesfull"})
+
+    return jsonify({"message":"you need to be logged in"})
 
 #reset-password
-@app.route('/api/auth/reset-password')
+@app.route('/api/auth/reset-password', methods=["POST"])
 def reset_password():
     """
     Resets password
     """
+	reset = request.get_json()
+    user = User.query.filter_by(email=reset["email"]).first()
 
-    return ""
+    if not user:
+		return jsonify({"message":"email address could not be found"})
+
+    if check_password_hash(user.password, reset['oldPassword']):
+
+        new_hashed_password = generate_password_hash(reset['newPassword'], method='sha256')
+        user.password = new_hashed_password
+
+        db.session.commit()
+
+        return jsonify({"message":"password has been updated succesfully"})
+
+    return jsonify({"message":"old-password is invalid"})
 
 #create a new event
 
 @app.route('/api/events', methods=['POST'])
-def create_event():
+@token_required
+def create_event(current_user):
     """
     Creates an event
     """
@@ -157,7 +200,8 @@ def create_event():
 
 #Updates an event
 @app.route('/api/events/<string:eventId>', methods=['PUT'])
-def update_event(eventId):
+@token_required
+def update_event(current_user, eventId):
     """
     Updates an Event
     """
@@ -177,7 +221,8 @@ def update_event(eventId):
 
 #deletes an event
 @app.route('/api/events/<eventId>', methods=['DELETE'])
-def delete_event(eventId):
+@token_required
+def delete_event(current_user, eventId):
     """
     Deletes an event
     """
@@ -194,7 +239,8 @@ def delete_event(eventId):
 
 #retrieves all events
 @app.route('/api/events', methods=['GET'])
-def retrieve_events():
+@token_required
+def retrieve_events(current_user):
     """
     Retrieves events
     """
@@ -235,7 +281,8 @@ def get_one_event(searchQuery):
 
 #Checks a user to the reserved events
 @app.route('/api/event/<eventId>/rsvp', methods=['PUT'])
-def rsvp_event(eventId):
+@token_required
+def rsvp_event(current_user, eventId):
     """
     Allows a user to RSVP to an event
     """
@@ -252,7 +299,8 @@ def rsvp_event(eventId):
 
 #Retrieves a list of users who have reserved for an event
 @app.route('/api/events/rsvp', methods=['GET'])
-def rsvp_guests():
+@token_required
+def rsvp_guests(current_user):
     """
     Retrieves a list of users who have event reservations
     """
