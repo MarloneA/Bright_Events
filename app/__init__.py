@@ -166,6 +166,8 @@ def create_app(config_name):
 
     	if evnt:
     		return jsonify({"message":"An event with a similar title already exists"}), 400
+        if events['title'] == "" or events['category'] == "" or events['location'] == "" or events['description'] == "":
+            return jsonify({"message":"Empty field set detected"})
 
     	new_event = Event(
     	                    title=events['title'],
