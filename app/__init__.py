@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, render_template
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 import jwt
@@ -41,6 +41,11 @@ def create_app(config_name):
             return f(current_user, *args, **kwargs)
 
         return decorated
+
+    #Render documentation as root of the api
+    @app.route('/')
+    def index():
+        return render_template('api_doc.html')
 
     #create a new user
     @app.route('/api/v2/auth/register', methods=['POST'])
