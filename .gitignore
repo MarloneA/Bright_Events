@@ -1,6 +1,9 @@
-
+/instance
 /venv
+/.vscode
 
-*.pyc
+.vscode
 .coverage
 *.DS_Store
+*.pyc
+.env
