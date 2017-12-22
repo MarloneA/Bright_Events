@@ -76,9 +76,7 @@ def create_app(config_name):
 
     		new_user = User(name=data['name'], email=data["email"], password=hashed_password)
 
-    		db.session.add(new_user)
-    		db.session.commit()
-
+    		new_user.save()
 
     		return jsonify({"message":"registration succesfull"})
 
@@ -175,8 +173,7 @@ def create_app(config_name):
     	                    location=events['location'],
     	                    description=events['description']
     	                    )
-    	db.session.add(new_event)
-    	db.session.commit()
+    	new_event.save()
 
     	return jsonify({"message":"new event has been created"}), 200
 
@@ -214,10 +211,9 @@ def create_app(config_name):
         if not event:
             return jsonify({'message' : 'The requested event was not found!'}), 400
 
-        db.session.delete(event)
-        db.session.commit()
+        event.delete()
 
-        return jsonify({'message' : 'The user has been deleted!'}), 200
+        return jsonify({'message' : 'The event has been deleted!'}), 200
 
     #retrieves all events
     @app.route('/api/v2/events', methods=['GET'])
