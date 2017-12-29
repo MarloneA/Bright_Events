@@ -84,6 +84,18 @@ class Event(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def json(self):
+        """
+        Returns a json representation of the model
+        """
+        return {
+            'id':self.id,
+            'title':self.title,
+            'location':self.location,
+            'category':self.category,
+            'description':self.description
+        }
+
 
 db.Table('reservations',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),

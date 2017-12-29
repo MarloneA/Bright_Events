@@ -263,16 +263,8 @@ def create_app(config_name):
         current_page = Events.page
 
         output = []
-
         for event in evnts:
-            event_data = {}
-            event_data['id'] = event.id
-            event_data['title'] = event.title
-            event_data['category'] = event.category
-            event_data['location'] = event.location
-            event_data['description'] = event.description
-            output.append(event_data)
-
+            output.append(event.json())
 
         return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
 
@@ -291,16 +283,8 @@ def create_app(config_name):
     		return jsonify({'message' : 'event not found!'}), 400
 
     	items = []
-
     	for evnt in search_results:
-
-    		search_data = {}
-    		search_data['id'] = evnt.id
-    		search_data['title'] = evnt.title
-    		search_data['category'] = evnt.category
-    		search_data['location'] = evnt.location
-    		search_data['description'] = evnt.description
-    		items.append(search_data)
+    		items.append(evnt.json())
 
     	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items})
 
@@ -366,14 +350,7 @@ def create_app(config_name):
         categories = []
 
         for evnt in filter_results:
-
-        	filter_category = {}
-        	filter_category['id'] = evnt.id
-        	filter_category['title'] = evnt.title
-        	filter_category['category'] = evnt.category
-        	filter_category['location'] = evnt.location
-        	filter_category['description'] = evnt.description
-        	categories.append(filter_category)
+        	categories.append(evnt.json())
 
         return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":categories}), 200
 
@@ -394,19 +371,12 @@ def create_app(config_name):
             return jsonify({"message":"no events found for the selected location"}), 401
 
 
-        categories = []
+        locations = []
 
         for evnt in filter_results:
+        	locations.append(evnt.json())
 
-        	filter_category = {}
-        	filter_category['id'] = evnt.id
-        	filter_category['title'] = evnt.title
-        	filter_category['category'] = evnt.category
-        	filter_category['location'] = evnt.location
-        	filter_category['description'] = evnt.description
-        	categories.append(filter_category)
-
-        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":categories}), 200
+        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":locations}), 200
 
 
     return app
