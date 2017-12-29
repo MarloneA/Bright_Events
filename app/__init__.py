@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 import jwt
 import datetime
+import re
 
 db = SQLAlchemy()
 
@@ -34,7 +35,7 @@ def create_app(config_name):
 
             try:
                 data = jwt.decode(token, app.config['SECRET_KEY'])
-                current_user = User.query.filter_by(public_id=data['public_id']).first()
+                current_user = User.query.filter_by(public_id=data["public_id"]).first()
             except:
                 return jsonify({'message' : 'Token is invalid!'}), 401
 
@@ -157,6 +158,30 @@ def create_app(config_name):
 
         return jsonify({"message":"old-password is invalid"}), 400
 
+    #Retrireves all users
+    @app.route('/api/v2/users', methods=['GET'])
+    def retrieve_users():
+        """
+        Retrieves all users from the database
+        """
+
+        Users = User.query.all()
+
+        output = []
+
+        for usr in Users:
+            usr_data = {}
+            usr_data['id'] = usr.id
+            usr_data['name'] = usr.name
+            usr_data['email'] = usr.email
+            usr_data['password'] = usr.password
+            output.append(usr_data)
+
+
+        return jsonify({"Users":output}), 200
+
+
+
     #create a new event
 
     @app.route('/api/v2/events', methods=['POST'])
@@ -263,7 +288,7 @@ def create_app(config_name):
         current_page = results.page
 
     	if not results:
-    		return jsonify({'message' : 'The requested events were not found!'}), 400
+    		return jsonify({'message' : 'event not found!'}), 400
 
     	items = []
 
@@ -279,34 +304,48 @@ def create_app(config_name):
 
     	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items})
 
-    #Checks a user to the reserved events
-    @app.route('/api/v2/event/<eventId>/rsvp', methods=['PUT'])
+    #Reserves an event
+    @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
     @token_required
     def rsvp_event(current_user, eventId):
         """
-        Allows a user to RSVP to an event
+        Allows a user to RSVP for an event
         """
 
-        user = User.query.filter_by(name=eventId).first()
+        usr = User.query.filter_by(name=current_user.name).first()
 
-        if not user:
-            return jsonify({'message' : 'No user found!'}),401
+        event = Event.query.filter_by(title=eventId).first()
 
-        print Event.user
+        guests = event.user
+        guests.append(usr)
 
-        #db.session.commit()
+        output = []
+        for guest in guests:
+            rsv = {}
+            rsv['name'] = guest.name
+            output.append(rsv)
 
-        return jsonify({'message' : 'The user has reserved for the event!'})
+        return jsonify({'message':'reservation approved', 'guests':output})
 
     #Retrieves a list of users who have reserved for an event
-    @app.route('/api/v2/events/rsvp', methods=['GET'])
+    @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
     @token_required
-    def rsvp_guests(current_user):
+    def rsvp_guests(current_user, eventId):
         """
         Retrieves a list of users who have event reservations
         """
 
-        return ""
+        event = Event.query.filter_by(title=eventId).first()
+
+        guests = event.user
+
+        output = []
+        for guest in guests:
+            rsv = {}
+            rsv['name'] = guest.name
+            output.append(rsv)
+
+        return jsonify({'message':output})
 
 
     #filter by category

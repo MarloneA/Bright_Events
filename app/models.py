@@ -44,7 +44,7 @@ class Event(db.Model):
 
     __tablename__ = "event"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     event_id = db.Column(db.String(50), unique=True)
     title = db.Column(db.String(50))
     category = db.Column(db.String(50))
