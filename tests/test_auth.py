@@ -1,6 +1,6 @@
 """Flask API tests"""
 import unittest
-from app.data import users, events, logged_users
+from data import users, events, logged_users
 
 class TestAuth(unittest.TestCase):
     """Runs tests on API endpoints"""
