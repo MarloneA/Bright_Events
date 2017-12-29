@@ -230,11 +230,16 @@ def create_app(config_name):
         Retrieves events
         """
 
-        Events = Event.query.all()
+        Events = Event.query.paginate(page=None, per_page=2)
+
+        evnts = Events.items
+        num_results = Events.total
+        total_pages = Events.pages
+        current_page = Events.page
 
         output = []
 
-        for event in Events:
+        for event in evnts:
             event_data = {}
             event_data['id'] = event.id
             event_data['title'] = event.title
@@ -244,20 +249,25 @@ def create_app(config_name):
             output.append(event_data)
 
 
-        return jsonify({"Events":output}), 200
+        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
 
     #search and retrieve a single event
     @app.route('/api/v2/events/<searchQuery>', methods=['GET'])
     def get_one_event(searchQuery):
 
-    	results = Event.query.filter(Event.title.like('%'+searchQuery+'%')).all()
+    	results = Event.query.filter(Event.title.like('%'+searchQuery+'%')).paginate(page=None, per_page=2)
+
+        search_results = results.items
+        num_results = results.total
+        total_pages = results.pages
+        current_page = results.page
 
     	if not results:
     		return jsonify({'message' : 'The requested events were not found!'}), 400
 
     	items = []
 
-    	for evnt in results:
+    	for evnt in search_results:
 
     		search_data = {}
     		search_data['id'] = evnt.id
@@ -267,7 +277,7 @@ def create_app(config_name):
     		search_data['description'] = evnt.description
     		items.append(search_data)
 
-    	return jsonify(items)
+    	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items})
 
     #Checks a user to the reserved events
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['PUT'])
@@ -303,46 +313,61 @@ def create_app(config_name):
     @app.route('/api/v2/events/category/<category>', methods=['GET'])
     def filter_all_categories(category):
 
-    	event = Event.query.filter_by(category=category).all()
+    	event = Event.query.filter_by(category=category).paginate(page=None, per_page=2)
 
-    	if event != []:
+        filter_results = event.items
+        num_results = event.total
+        total_pages = event.pages
+        current_page = event.page
 
-    		categories = []
-    		for evnt in event:
+    	if not event:
+            return jsonify({"message":"no events found for the selected category"}), 401
 
-    			filter_category = {}
-    			filter_category['id'] = evnt.id
-    			filter_category['title'] = evnt.title
-    			filter_category['category'] = evnt.category
-    			filter_category['location'] = evnt.location
-    			filter_category['description'] = evnt.description
-    			categories.append(filter_category)
 
-    		return jsonify(categories), 200
-    	else:
-    		return jsonify({"message":"no events found for the category"}), 401
+        categories = []
+
+        for evnt in filter_results:
+
+        	filter_category = {}
+        	filter_category['id'] = evnt.id
+        	filter_category['title'] = evnt.title
+        	filter_category['category'] = evnt.category
+        	filter_category['location'] = evnt.location
+        	filter_category['description'] = evnt.description
+        	categories.append(filter_category)
+
+        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":categories}), 200
+
+
 
     #filter by location
     @app.route('/api/v2/events/location/<location>', methods=['GET'])
     def filter_all_locations(location):
 
-    	event = Event.query.filter_by(location=location).all()
+    	event = Event.query.filter_by(location=location).paginate(page=None, per_page=2)
 
-    	if event != []:
+        filter_results = event.items
+        num_results = event.total
+        total_pages = event.pages
+        current_page = event.page
 
-    		locations = []
-    		for evnt in event:
+    	if not event:
+            return jsonify({"message":"no events found for the selected location"}), 401
 
-    			filter_location = {}
-    			filter_location['id'] = evnt.id
-    			filter_location['title'] = evnt.title
-    			filter_location['category'] = evnt.category
-    			filter_location['location'] = evnt.location
-    			filter_location['description'] = evnt.description
-    			locations.append(filter_location)
 
-    		return jsonify(locations), 200
-    	else:
-    		return jsonify({"message":"no events found for the chosen location"}), 401
+        categories = []
+
+        for evnt in filter_results:
+
+        	filter_category = {}
+        	filter_category['id'] = evnt.id
+        	filter_category['title'] = evnt.title
+        	filter_category['category'] = evnt.category
+        	filter_category['location'] = evnt.location
+        	filter_category['description'] = evnt.description
+        	categories.append(filter_category)
+
+        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":categories}), 200
+
 
     return app
