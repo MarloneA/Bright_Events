@@ -172,8 +172,13 @@ class TestAuth(unittest.TestCase):
         return ""
 
     def test_render_api_as_root(self):
+        """
+        Tests if documentation is rendered as the root of the application
+        """
+        res = self.client().get('/')
 
-        return ""
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.content_type, 'text/html; charset=utf-8')
 
 
 
