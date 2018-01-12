@@ -111,7 +111,20 @@ class TestAuth(unittest.TestCase):
         """
         Test that API endpoint '/api/events/<eventId>' has made an update request
         """
-        return ""
+        event = {
+            "id":"32",
+            "title":"newtitle",
+            "category":"poems",
+            "location":"rwanda",
+            "description":"the best event ever"
+            }
+
+        res = self.client().put('/api/events/grunge', event)
+
+        self.assertEqual(event["title"], "newtitle")
+        self.assertEqual(event["location"], "rwanda")
+        self.assertEqual(event["category"], "poems")
+        self.assertEqual(event["description"], "the best event ever")
 
     def test_delete_event(self):
         """
