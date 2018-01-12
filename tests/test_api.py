@@ -131,15 +131,9 @@ class TestAuth(unittest.TestCase):
         Test that API endpoint '/api/events/<eventId>' has deleted an event
         """
 
-        return ""
+        res = self.client().delete('/api/events/grunge')
 
-
-    def test_delete_event(self):
-        """
-        Test that API endpoint '/api/events/<eventId>' has deleted an event
-        """
-
-        return ""
+        self.assertEqual(res.status_code, 404)
 
 
     def test_rsvp_event(self):
