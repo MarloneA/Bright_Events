@@ -84,7 +84,20 @@ class TestAuth(unittest.TestCase):
         """
         Test that API endpoint '/api/events' has created an event
         """
-        return ""
+        data = {
+            "id":"67",
+            "title":"grunge",
+            "category":"music",
+            "location":"nairobi",
+            "description":"A wonderful event extravaganza"
+            }
+        res = self.client().post('/api/events', data)
+
+        self.assertEqual(data['title'], 'grunge')
+        self.assertEqual(data['category'], 'music')
+        self.assertEqual(data['location'], 'nairobi')
+        self.assertEqual(data['description'], 'A wonderful event extravaganza')
+        self.assertEqual(data['id'], '67')
 
     def test_update_event(self):
         """
