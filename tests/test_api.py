@@ -26,6 +26,96 @@ class TestAuth(unittest.TestCase):
             db.drop_all()
             db.create_all()
 
+    def test_register_user(self):
+        """
+        Test that API endpoint ''/api/auth/register' creates a new user account
+        """
+
+        return ""
+
+    def test_login_user(self):
+        """
+        Test that API endpoint '/api/auth/login' adds login details
+        """
+
+        return ""
+
+    def test_logout_user(self):
+        """
+        Test that API endpoint '/api/auth/logout' logs out os a session
+        """
+
+        return ""
+
+
+    def test_create_event(self):
+        """
+        Test that API endpoint '/api/events' has created an event
+        """
+        return ""
+
+    def test_update_event(self):
+        """
+        Test that API endpoint '/api/events/<eventId>' has made an update request
+        """
+        return ""
+
+    def test_delete_event(self):
+        """
+        Test that API endpoint '/api/events/<eventId>' has deleted an event
+        """
+
+        return ""
+
+
+    def test_delete_event(self):
+        """
+        Test that API endpoint '/api/events/<eventId>' has deleted an event
+        """
+
+        return ""
+
+
+    def test_rsvp_event(self):
+        """
+        Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest
+        """
+
+        return ""
+
+    def test_retrieve_reserved_guests(self):
+        """
+        Test that API endpoint '/api/event/<eventId>/rsvp' retrieves event guests
+        """
+
+        return ""
+
+    def test_search_for_event(self):
+        """
+        Test that API endpoint '/api/events' has created an event
+        """
+
+        return ""
+
+    def test_filter_event_by_category(self):
+        """
+        Test that API endpoint '/api/events' retrieves all events
+        """
+
+        return ""
+
+    def test_filter_event_by_location(self):
+        """
+        Test that API endpoint '/api/events/<eventId>' has made an update request
+        """
+
+        return ""
+
+    def test_render_api_as_root(self):
+
+        return ""
+
+
 
     def tearDown(self):
         """teardown all initialized variables."""
