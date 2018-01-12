@@ -68,7 +68,16 @@ class TestAuth(unittest.TestCase):
         Test that API endpoint '/api/auth/logout' logs out os a session
         """
 
-        return ""
+        data = dict({
+
+                'email': 'test@example.com',
+                'password': 'test_password'
+
+                })
+
+        login_res = self.client().post('/api/v2/auth/logout', data)
+
+        self.assertEqual(login_res.status, '401 UNAUTHORIZED')
 
 
     def test_create_event(self):
