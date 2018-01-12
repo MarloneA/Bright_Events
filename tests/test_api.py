@@ -31,7 +31,21 @@ class TestAuth(unittest.TestCase):
         Test that API endpoint ''/api/auth/register' creates a new user account
         """
 
-        return ""
+        data = {
+                'name':'test',
+                'email': 'test@example.com',
+                'password': 'test_password'
+                }
+        res = self.client().post(
+            '/api/v2/auth/register',
+            data,
+            content_type='application/json'
+        )
+
+        self.assertEqual(data['name'], 'test')
+        self.assertEqual(data['email'], 'test@example.com')
+        self.assertEqual(data['password'], 'test_password')
+        self.assertNotEqual(res.status_code, 200)
 
     def test_login_user(self):
         """
