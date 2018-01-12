@@ -52,7 +52,16 @@ class TestAuth(unittest.TestCase):
         Test that API endpoint '/api/auth/login' adds login details
         """
 
-        return ""
+        data = dict({
+
+                'email': 'test@example.com',
+                'password': 'test_password'
+
+                })
+
+        login_res = self.client().post('/api/v2/auth/login', data)
+
+        self.assertEqual(login_res.status_code, 400)
 
     def test_logout_user(self):
         """
