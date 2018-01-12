@@ -99,6 +99,14 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(data['description'], 'A wonderful event extravaganza')
         self.assertEqual(data['id'], '67')
 
+    def test_retrieve_events(self):
+        """
+        Test that APi endpoint retrieves all events
+        """
+
+        res = self.client().get('/api/v2/events')
+        self.assertEqual(res.status_code, 401)
+
     def test_update_event(self):
         """
         Test that API endpoint '/api/events/<eventId>' has made an update request
