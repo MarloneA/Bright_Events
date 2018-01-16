@@ -1,6 +1,7 @@
 /instance
 /venv
 /.vscode
+/tmp
 
 .vscode
 .coverage

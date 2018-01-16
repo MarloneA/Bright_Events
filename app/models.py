@@ -36,6 +36,9 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def __repr__(self):
+        return "<User: {}>".format(self.name)
+
 
 class Event(db.Model):
     """
@@ -95,6 +98,9 @@ class Event(db.Model):
             'category':self.category,
             'description':self.description
         }
+
+    def __repr__(self):
+        return "<Event: {}>".format(self.title)
 
 
 db.Table('reservations',

@@ -185,13 +185,13 @@ def create_app(config_name):
     #create a new event
 
     @app.route('/api/v2/events', methods=['POST'])
-    @token_required
-    def create_event(current_user):
+    # @token_required
+    def create_event():
     	"""
     	Creates an event
     	"""
 
-    	events = request.get_json()
+    	events = request.get_json(force=True)
     	evnt = Event.query.filter_by(title=events["title"]).first()
 
     	if evnt:
@@ -207,38 +207,41 @@ def create_app(config_name):
     	                    )
     	new_event.save()
 
-    	return jsonify({"message":"new event has been created"}), 200
+        response = jsonify({"message":"new event has been created"})
+        response.status_code = 201
+
+    	return response
 
     #Updates an event
-    @app.route('/api/v2/events/<string:eventId>', methods=['PUT'])
-    @token_required
-    def update_event(current_user, eventId):
+    @app.route('/api/v2/events/<string:eventTitle>', methods=['PUT'])
+    def update_event(eventTitle):
         """
         Updates an Event
         """
 
-        event = Event.query.filter_by(id=eventId).first()
+        update_data = request.get_json(force=True)
+        event = Event.query.filter_by(title=eventTitle).first()
+
 
         if not event:
             return jsonify({'message' : 'The requested event was not found!'}), 400
 
-        event.title = request.json['title']
-        event.category = request.json['category']
-        event.location = request.json['location']
-        event.description = request.json['description']
+        event.title = update_data['title']
+        event.category = update_data['category']
+        event.location = update_data['location']
+        event.description = update_data['description']
         db.session.commit()
 
         return jsonify({'message' : 'The event has been updated!'}), 200
 
     #deletes an event
-    @app.route('/api/v2/events/<eventId>', methods=['DELETE'])
-    @token_required
-    def delete_event(current_user, eventId):
+    @app.route('/api/v2/events/<eventTitle>', methods=['DELETE'])
+    def delete_event(eventTitle):
         """
         Deletes an event
         """
 
-        event = Event.query.filter_by(id=eventId).first()
+        event = Event.query.filter_by(title=eventTitle).first()
 
         if not event:
             return jsonify({'message' : 'The requested event was not found!'}), 400
@@ -249,8 +252,7 @@ def create_app(config_name):
 
     #retrieves all events
     @app.route('/api/v2/events', methods=['GET'])
-    @token_required
-    def retrieve_events(current_user):
+    def retrieve_events():
         """
         Retrieves events
         """
@@ -279,14 +281,16 @@ def create_app(config_name):
         total_pages = results.pages
         current_page = results.page
 
-    	if not results:
+    	if not results.items:
     		return jsonify({'message' : 'event not found!'}), 400
 
-    	items = []
-    	for evnt in search_results:
-    		items.append(evnt.json())
+        else:
 
-    	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items})
+        	items = []
+        	for evnt in search_results:
+        		items.append(evnt.json())
+
+        	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items}), 200
 
     #Reserves an event
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
