@@ -1,6 +1,7 @@
 import unittest
 import os
 import json
+import psycopg2
 from app import create_app, db
 from app.models import User, Event
 
@@ -24,19 +25,62 @@ class TestAuth(unittest.TestCase):
             # create all tables
             db.create_all()
 
+
+    @staticmethod
+    def charVarying():
+        """
+        Static method that changes character varying(50) to character varying(200)
+        in the db to enable hashed passwords( method=sha256) to be stored
+        """
+
+        sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(200);'
+        conn = psycopg2.connect("dbname=test_bev user=marlone911")
+        cur = conn.cursor()
+        cur.execute(sqlstr)
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+
+
     def test_register_user(self):
         """
         Test if a user can succesfully register an account
         """
 
-        return ""
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.user_data)
+                )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("registration succesfull", res.data)
 
     def test_if_account_is_already_registered(self):
         """
         Test if an account is already registered
         """
 
-        return ""
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.user_data)
+                )
+
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.user_data)
+                )
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("Email has already been registered", res.data)
 
     def test_login(self):
         """

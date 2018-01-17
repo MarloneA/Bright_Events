@@ -4,6 +4,7 @@ from functools import wraps
 import jwt
 import datetime
 import re
+import os
 
 db = SQLAlchemy()
 
@@ -26,6 +27,7 @@ def create_app(config_name):
         @wraps(f)
         def decorated(*args, **kwargs):
             token = None
+            secret = os.getenv('SECRET_KEY')
 
             if 'x-access-token' in request.headers:
                 token = request.headers['x-access-token']
@@ -34,7 +36,7 @@ def create_app(config_name):
                 return jsonify({'message' : 'Token is missing!'}), 401
 
             try:
-                data = jwt.decode(token, app.config['SECRET_KEY'])
+                data = jwt.decode(token, secret)
                 current_user = User.query.filter_by(public_id=data["public_id"]).first()
             except:
                 return jsonify({'message' : 'Token is invalid!'}), 401
@@ -55,7 +57,7 @@ def create_app(config_name):
     	Creates a user account
     	"""
 
-    	data = request.get_json()
+    	data = request.get_json(force=True)
 
     	if "name" not in data or "email" not in data or "password" not in data:
     		return jsonify({"message":"All fields are required"})
@@ -90,7 +92,7 @@ def create_app(config_name):
     #login a user
     @app.route('/api/v2/auth/login', methods=['POST'])
     def login():
-    	auth = request.get_json()
+    	auth = request.get_json(force=True)
 
     	if not auth or auth['email'] == "" or auth['password'] == "":
     		return jsonify({"message":"Could not verify"}), 400
@@ -100,12 +102,21 @@ def create_app(config_name):
     		return jsonify({"message":"Could not verify"}), 400
 
     	if check_password_hash(user.password, auth['password']):
-    		token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
 
-    		return jsonify({'token' : token.decode('UTF-8')}), 200
+            payload = {
+                'public_id' : user.public_id,
+                'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+            }
+            secret = os.getenv('SECRET_KEY')
+            token = jwt.encode(payload, secret)
+            if token:
+                response = {
+                    "message":"Login succesfull",
+                    "x-access-token":token.decode()
+                }
+            return make_response(jsonify(response)), 200
 
     	return jsonify({"message":"Could not verify"}), 400
-
 
     #logout a user
     @app.route('/api/v2/auth/logout', methods=["POST"])
@@ -158,35 +169,12 @@ def create_app(config_name):
 
         return jsonify({"message":"old-password is invalid"}), 400
 
-    #Retrireves all users
-    @app.route('/api/v2/users', methods=['GET'])
-    def retrieve_users():
-        """
-        Retrieves all users from the database
-        """
-
-        Users = User.query.all()
-
-        output = []
-
-        for usr in Users:
-            usr_data = {}
-            usr_data['id'] = usr.id
-            usr_data['name'] = usr.name
-            usr_data['email'] = usr.email
-            usr_data['password'] = usr.password
-            output.append(usr_data)
-
-
-        return jsonify({"Users":output}), 200
-
-
 
     #create a new event
 
     @app.route('/api/v2/events', methods=['POST'])
-    # @token_required
-    def create_event():
+    @token_required
+    def create_event(current_user):
     	"""
     	Creates an event
     	"""
@@ -214,7 +202,8 @@ def create_app(config_name):
 
     #Updates an event
     @app.route('/api/v2/events/<string:eventTitle>', methods=['PUT'])
-    def update_event(eventTitle):
+    @token_required
+    def update_event(current_user, eventTitle):
         """
         Updates an Event
         """
@@ -236,7 +225,8 @@ def create_app(config_name):
 
     #deletes an event
     @app.route('/api/v2/events/<eventTitle>', methods=['DELETE'])
-    def delete_event(eventTitle):
+    @token_required
+    def delete_event(current_user, eventTitle):
         """
         Deletes an event
         """
@@ -252,7 +242,8 @@ def create_app(config_name):
 
     #retrieves all events
     @app.route('/api/v2/events', methods=['GET'])
-    def retrieve_events():
+    @token_required
+    def retrieve_events(current_user):
         """
         Retrieves events
         """

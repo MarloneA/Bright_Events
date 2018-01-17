@@ -11,8 +11,7 @@ class User(db.Model):
     """
     __tablename__ = "user"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    public_id = db.Column(db.String(50), unique=True)
+    public_id = db.Column(db.Integer,primary_key=True, autoincrement=True, unique=True)
     name = db.Column(db.String(50))
     email = db.Column(db.String(50))
     password = db.Column(db.String(50))
@@ -47,8 +46,7 @@ class Event(db.Model):
 
     __tablename__ = "event"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    event_id = db.Column(db.String(50), unique=True)
+    event_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(50))
     category = db.Column(db.String(50))
     location = db.Column(db.String(50))
@@ -92,7 +90,7 @@ class Event(db.Model):
         Returns a json representation of the model
         """
         return {
-            'id':self.id,
+            'id':self.event_id,
             'title':self.title,
             'location':self.location,
             'category':self.category,
@@ -104,5 +102,5 @@ class Event(db.Model):
 
 
 db.Table('reservations',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('event_id', db.Integer, db.ForeignKey('event.id')))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.public_id')),
+    db.Column('event_id', db.Integer, db.ForeignKey('event.event_id')))

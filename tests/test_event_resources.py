@@ -4,6 +4,7 @@ import json
 from app import create_app, db
 from app.models import User, Event
 from flask import jsonify
+from test_auth import TestAuth
 
 class TestEvent(unittest.TestCase):
     """
@@ -26,13 +27,47 @@ class TestEvent(unittest.TestCase):
             # create all tables
             db.create_all()
 
+    def register_user(self, name="test", email="user@test.com", password="test1234"):
+        """
+        This helper method helps register a test user.
+        """
+        TestAuth.charVarying()
+
+        user_data = {
+            'name':name,
+            'email': email,
+            'password': password
+        }
+        return self.client().post('/api/v2/auth/register', data=json.dumps(user_data))
+
+
+    def login_user(self, email="user@test.com", password="test1234"):
+        """
+        This helper method helps log in a test user.
+        """
+        user_data = {
+            'email': email,
+            'password': password
+        }
+        return self.client().post('/api/v2/auth/login', data=json.dumps(user_data))
+
     def test_create_event(self):
         """
         Test that API endpoint '/api/events' has created an event
         """
 
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
         res = self.client().post(
                 '/api/v2/events',
+                headers=head,
                 data=json.dumps(self.event_data)
                 )
 
@@ -44,10 +79,19 @@ class TestEvent(unittest.TestCase):
         Test that APi endpoint retrieves all events
         """
 
-        res = self.client().post('api/v2/events', data=json.dumps(self.event_data))
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post('api/v2/events', headers=head, data=json.dumps(self.event_data))
         self.assertEqual(res.status_code, 201)
 
-        res = self.client().get('/api/v2/events')
+        res = self.client().get('/api/v2/events', headers=head)
 
         to_json =  json.loads(res.data)
 
@@ -62,8 +106,19 @@ class TestEvent(unittest.TestCase):
         Test that API endpoint '/api/events/<eventId>' has made an update request
         """
 
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+
         resU = self.client().post(
             '/api/v2/events',
+            headers=head,
             data=json.dumps({
             	"title":"it",
             	"location":"derry",
@@ -74,6 +129,7 @@ class TestEvent(unittest.TestCase):
 
         resU = self.client().put(
             '/api/v2/events/it',
+            headers=head,
             data=json.dumps({
                 "title":"it",
             	"location":"derry",
@@ -87,8 +143,18 @@ class TestEvent(unittest.TestCase):
         Test that API endpoint '/api/events/<eventId>' has deleted an event
         """
 
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"it",
                 "location":"derry",
@@ -97,10 +163,10 @@ class TestEvent(unittest.TestCase):
                 }))
         self.assertEqual(rv.status_code, 201)
 
-        res = self.client().delete('api/v2/events/it')
+        res = self.client().delete('api/v2/events/it', headers=head)
         self.assertEqual(res.status_code, 200)
 
-        result = self.client().get('api/v2/events/it')
+        result = self.client().get('api/v2/events/it',headers=head)
 
         self.assertEqual(result.status_code, 400)
         self.assertIn("event not found!", result.data)
@@ -110,7 +176,16 @@ class TestEvent(unittest.TestCase):
         Test that API endpoint '/api/events/<searchQuery>' retrieves the requested event
         """
 
-        res = self.client().post('api/v2/events', data=json.dumps(self.event_data))
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post('api/v2/events', headers=head, data=json.dumps(self.event_data))
         self.assertEqual(res.status_code, 201)
 
         res = self.client().get('/api/v2/events/daraja')
@@ -127,8 +202,18 @@ class TestEvent(unittest.TestCase):
         """
         Test that API endpoint '/api/v2/events/category/<category>' filters events by a category
         """
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"rasgueado",
                 "location":"nakuru",
@@ -139,6 +224,7 @@ class TestEvent(unittest.TestCase):
 
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"it",
                 "location":"derry",
@@ -149,6 +235,7 @@ class TestEvent(unittest.TestCase):
 
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"flam",
                 "location":"nairobi",
@@ -174,8 +261,18 @@ class TestEvent(unittest.TestCase):
         Test that API endpoint '/api/v2/events/location/<location>' filters events by location
         """
 
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"rasgueado",
                 "location":"derry",
@@ -186,6 +283,7 @@ class TestEvent(unittest.TestCase):
 
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"it",
                 "location":"derry",
@@ -196,6 +294,7 @@ class TestEvent(unittest.TestCase):
 
         rv = self.client().post(
                 'api/v2/events',
+                headers=head,
                 data=json.dumps({
                 "title":"flam",
                 "location":"derry",
