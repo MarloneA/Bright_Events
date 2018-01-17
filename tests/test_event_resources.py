@@ -3,6 +3,7 @@ import os
 import json
 from app import create_app, db
 from app.models import User, Event
+from flask import jsonify
 
 class TestEvent(unittest.TestCase):
     """
@@ -47,7 +48,13 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
 
         res = self.client().get('/api/v2/events')
+
+        to_json =  json.loads(res.data)
+
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(to_json["num_results"], 1)
+        self.assertEqual(to_json["page"], 1)
+        self.assertEqual(to_json["total_pages"], 1)
 
 
     def test_update_event(self):
@@ -107,21 +114,105 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
 
         res = self.client().get('/api/v2/events/daraja')
+
+        to_json =  json.loads(res.data)
+
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(to_json["num_results"], 1)
+        self.assertEqual(to_json["page"], 1)
+        self.assertEqual(to_json["total_pages"], 1)
 
 
     def test_filter_event_by_category(self):
         """
         Test that API endpoint '/api/v2/events/category/<category>' filters events by a category
         """
-        return ""
+        rv = self.client().post(
+                'api/v2/events',
+                data=json.dumps({
+                "title":"rasgueado",
+                "location":"nakuru",
+                "category":"music",
+                "description":"Come see the mariachi"
+                }))
+        self.assertEqual(rv.status_code, 201)
+
+        rv = self.client().post(
+                'api/v2/events',
+                data=json.dumps({
+                "title":"it",
+                "location":"derry",
+                "category":"horror",
+                "description":"Come see pennywise the clown in action"
+                }))
+        self.assertEqual(rv.status_code, 201)
+
+        rv = self.client().post(
+                'api/v2/events',
+                data=json.dumps({
+                "title":"flam",
+                "location":"nairobi",
+                "category":"music",
+                "description":"Come see the king of flam"
+                }))
+        self.assertEqual(rv.status_code, 201)
+
+        result = self.client().get('/api/v2/events/category/music')
+        self.assertEqual(result.status_code, 200)
+
+        to_json =  json.loads(result.data)
+        self.assertEqual(len(to_json["1filter_results"]), 2)
+        self.assertEqual(to_json["num_results"], 2)
+        self.assertEqual(to_json["page"], 1)
+        self.assertEqual(to_json["total_pages"], 1)
+
+
+
 
     def test_filter_event_by_location(self):
         """
         Test that API endpoint '/api/v2/events/location/<location>' filters events by location
         """
 
-        return ""
+        rv = self.client().post(
+                'api/v2/events',
+                data=json.dumps({
+                "title":"rasgueado",
+                "location":"derry",
+                "category":"music",
+                "description":"Come see the mariachi"
+                }))
+        self.assertEqual(rv.status_code, 201)
+
+        rv = self.client().post(
+                'api/v2/events',
+                data=json.dumps({
+                "title":"it",
+                "location":"derry",
+                "category":"horror",
+                "description":"Come see pennywise the clown in action"
+                }))
+        self.assertEqual(rv.status_code, 201)
+
+        rv = self.client().post(
+                'api/v2/events',
+                data=json.dumps({
+                "title":"flam",
+                "location":"derry",
+                "category":"music",
+                "description":"Come see the king of flam"
+                }))
+        self.assertEqual(rv.status_code, 201)
+
+        result = self.client().get('/api/v2/events/location/derry')
+        self.assertEqual(result.status_code, 200)
+
+        to_json =  json.loads(result.data)
+
+        self.assertEqual(len(to_json["1filter_results"]), 2)
+        self.assertEqual(to_json["num_results"], 3)
+        self.assertEqual(to_json["page"], 1)
+        self.assertEqual(to_json["total_pages"], 2)
 
     def test_rsvp_event(self):
         """
@@ -139,7 +230,7 @@ class TestEvent(unittest.TestCase):
 
     def test_render_api_as_root(self):
         """
-        Tests if documentation is rendered as the root of the application
+        Tests if the api documentation is rendered as the root directory of the application
         """
         res = self.client().get('/')
 
