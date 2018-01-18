@@ -52,7 +52,7 @@ def create_app(config_name):
     def index():
         return render_template('api_doc.html')
 
-    #create a new user
+    #User registration
     @app.route('/api/v2/auth/register', methods=['POST'])
     def create_user():
     	"""
@@ -62,7 +62,7 @@ def create_app(config_name):
     	data = request.get_json(force=True)
 
     	if "name" not in data or "email" not in data or "password" not in data:
-    		return jsonify({"message":"All fields are required"})
+    		return jsonify({"message":"All fields are required"}), 400
 
     	hashed_password = generate_password_hash(data['password'], method='sha256')
 
@@ -88,20 +88,20 @@ def create_app(config_name):
 
     		new_user.save()
 
-    		return jsonify({"message":"registration succesfull"})
+    		return jsonify({"message":"registration succesfull"}), 201
 
 
-    #login a user
+    #User login
     @app.route('/api/v2/auth/login', methods=['POST'])
     def login():
     	auth = request.get_json(force=True)
 
     	if not auth or auth['email'] == "" or auth['password'] == "":
-    		return jsonify({"message":"Could not verify"}), 400
+    		return jsonify({"message":"Invalid email/password"}), 401
     	user = User.query.filter_by(email=auth["email"]).first()
 
     	if not user:
-    		return jsonify({"message":"Could not verify"}), 400
+    		return jsonify({"message":"Could not verify"}), 401
 
     	if check_password_hash(user.password, auth['password']):
 
@@ -118,9 +118,9 @@ def create_app(config_name):
                 }
             return make_response(jsonify(response)), 200
 
-    	return jsonify({"message":"Could not verify"}), 400
+    	return jsonify({"message":"Incorrect password"}), 401
 
-    #logout a user
+    #User logout
     @app.route('/api/v2/auth/logout', methods=["POST"])
     @token_required
     def logout(current_user):
@@ -133,7 +133,7 @@ def create_app(config_name):
             try:
                 auth_token = auth_header.split(" ")[0]
             except IndexError:
-                return jsonify({'message':'failed Provide a valid auth token'}), 403
+                return jsonify({'message':'failed Provide a valid auth token'}), 401
             else:
                 decoded_token_response = User.decode_auth_token(auth_token)
                 if not isinstance(decoded_token_response, str):
@@ -143,7 +143,7 @@ def create_app(config_name):
                 return jsonify({'message':'failed'}), decoded_token_response, 401
         return 'failed Provide an authorization header', 403
 
-    #reset-password
+    #Password Reset
     @app.route('/api/v2/auth/reset-password', methods=["POST"])
     def reset_password():
         """
@@ -152,12 +152,12 @@ def create_app(config_name):
         reset = request.get_json(force=True)
 
         if "email" not in reset or "oldPassword" not in reset or "newPassword" not in reset:
-            return jsonify({"message":"All fields are required"})
+            return jsonify({"message":"All fields are required"}), 400
 
         user = User.query.filter_by(email=reset["email"]).first()
 
         if not user:
-        	return jsonify({"message":"email address could not be found"}), 400
+        	return jsonify({"message":"email address could not be found"}), 401
 
         if check_password_hash(user.password, reset['oldPassword']):
 
@@ -168,10 +168,10 @@ def create_app(config_name):
 
     		return jsonify({"message":"password has been updated succesfully"}), 200
 
-        return jsonify({"message":"old-password is invalid"}), 400
+        return jsonify({"message":"old-password is invalid"}), 401
 
 
-    #create a new event
+    #Create Event
     @app.route('/api/v2/events', methods=['POST'])
     @token_required
     def create_event(current_user):
@@ -185,7 +185,7 @@ def create_app(config_name):
     	if evnt:
     		return jsonify({"message":"An event with a similar title already exists"}), 400
         if events['title'] == "" or events['category'] == "" or events['location'] == "" or events['description'] == "":
-            return jsonify({"message":"Empty field set detected"})
+            return jsonify({"message":"Empty field set detected"}), 400
 
     	new_event = Event(
     	                    title=events['title'],
@@ -200,7 +200,28 @@ def create_app(config_name):
 
     	return response
 
-    #Updates an event
+    #Retrieve Events
+    @app.route('/api/v2/events', methods=['GET'])
+    @token_required
+    def retrieve_events(current_user):
+        """
+        Retrieves events
+        """
+
+        Events = Event.query.paginate(page=None, per_page=2)
+
+        evnts = Events.items
+        num_results = Events.total
+        total_pages = Events.pages
+        current_page = Events.page
+
+        output = []
+        for event in evnts:
+            output.append(event.json())
+
+        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
+
+    #Update Event
     @app.route('/api/v2/events/<string:eventTitle>', methods=['PUT'])
     @token_required
     def update_event(current_user, eventTitle):
@@ -223,7 +244,7 @@ def create_app(config_name):
 
         return jsonify({'message' : 'The event has been updated!'}), 200
 
-    #deletes an event
+    #Delete Event
     @app.route('/api/v2/events/<eventTitle>', methods=['DELETE'])
     @token_required
     def delete_event(current_user, eventTitle):
@@ -240,28 +261,52 @@ def create_app(config_name):
 
         return jsonify({'message' : 'The event has been deleted!'}), 200
 
-    #retrieves all events
-    @app.route('/api/v2/events', methods=['GET'])
+    #Create Reservation
+    @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
     @token_required
-    def retrieve_events(current_user):
+    def rsvp_event(current_user, eventId):
         """
-        Retrieves events
+        Allows a user to RSVP for an event
         """
 
-        Events = Event.query.paginate(page=None, per_page=2)
+        usr = User.query.filter_by(name=current_user.name).first()
 
-        evnts = Events.items
-        num_results = Events.total
-        total_pages = Events.pages
-        current_page = Events.page
+        event = Event.query.filter_by(title=eventId).first()
+
+        guests = event.user
+        if usr in guests:
+            return jsonify({"message":"you have already reserved for "+event.title}), 403
+        else:
+            guests.append(usr)
+            db.session.commit()
+
+        return jsonify({'message':'Welcome ' + current_user.name +', your reservation has been approved'}), 200
+
+    #Retrieves Reservations
+    @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
+    @token_required
+    def rsvp_guests(current_user, eventId):
+        """
+        Retrieves a list of users who have event reservations
+        """
+
+        event = Event.query.filter_by(title=eventId).first()
+
+        if not event:
+            return jsonify({"message":"Please Enter a valid event title"}), 403
+
+        guests = event.user
 
         output = []
-        for event in evnts:
-            output.append(event.json())
+        for guest in guests:
+            attendees = {}
+            attendees['name'] = guest.name
+            attendees['email'] = guest.email
+            output.append(attendees)
 
-        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
+        return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
 
-    #search and retrieve a single event
+    #Search Event
     @app.route('/api/v2/events/<searchQuery>', methods=['GET'])
     def get_one_event(searchQuery):
 
@@ -283,55 +328,7 @@ def create_app(config_name):
 
         	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items}), 200
 
-    #Reserves for an event
-    @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
-    @token_required
-    def rsvp_event(current_user, eventId):
-        """
-        Allows a user to RSVP for an event
-        """
-
-        usr = User.query.filter_by(name=current_user.name).first()
-
-        event = Event.query.filter_by(title=eventId).first()
-
-        guests = event.user
-        if usr in guests:
-            return jsonify({"message":"you have already reserved for "+event.title}), 403
-        else:
-            guests.append(usr)
-            db.session.commit()
-
-        return jsonify({'message':'Welcome ' + current_user.name +', your reservation has been approved'}), 200
-
-
-
-    #Retrieves a list of users who have reserved for an event
-    @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
-    @token_required
-    def rsvp_guests(current_user, eventId):
-        """
-        Retrieves a list of users who have event reservations
-        """
-
-        event = Event.query.filter_by(title=eventId).first()
-
-        if not event:
-            return jsonify({"message":"Please Enter a valid event title"}), 404
-
-        guests = event.user
-
-        output = []
-        for guest in guests:
-            attendees = {}
-            attendees['name'] = guest.name
-            attendees['email'] = guest.email
-            output.append(attendees)
-
-        return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
-
-
-    #filter by category
+    #Filter Events by Category
     @app.route('/api/v2/events/category/<category>', methods=['GET'])
     def filter_all_categories(category):
 
@@ -353,9 +350,7 @@ def create_app(config_name):
 
         return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":categories}), 200
 
-
-
-    #filter by location
+    #Filter Events by Location
     @app.route('/api/v2/events/location/<location>', methods=['GET'])
     def filter_all_locations(location):
 

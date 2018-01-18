@@ -23,7 +23,6 @@ class BlackListToken(db.Model):
     def blacklist(self):
         """
         Persist Blacklisted token in the database
-        :return:
         """
         db.session.add(self)
         db.session.commit()
@@ -32,8 +31,6 @@ class BlackListToken(db.Model):
     def check_blacklist(token):
         """
         Check to find out whether a token has already been blacklisted.
-        :param token: Authorization token
-        :return:
         """
         response = BlackListToken.query.filter_by(token=token).first()
         if response:

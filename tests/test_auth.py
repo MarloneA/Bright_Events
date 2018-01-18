@@ -57,7 +57,7 @@ class TestAuth(unittest.TestCase):
                 data=json.dumps(self.user_data)
                 )
 
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
         self.assertIn("registration succesfull", res.data)
 
     def test_if_account_is_already_registered(self):
@@ -72,7 +72,7 @@ class TestAuth(unittest.TestCase):
                 data=json.dumps(self.user_data)
                 )
 
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
         res = self.client().post(
                 '/api/v2/auth/register',
@@ -93,7 +93,7 @@ class TestAuth(unittest.TestCase):
                 '/api/v2/auth/register',
                 data=json.dumps(self.user_data)
                 )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
         res = self.client().post(
                 '/api/v2/auth/login',
@@ -124,7 +124,7 @@ class TestAuth(unittest.TestCase):
                 '/api/v2/auth/register',
                 data=json.dumps(self.user_data)
                 )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
         res = self.client().post(
                 '/api/v2/auth/login',
@@ -155,7 +155,7 @@ class TestAuth(unittest.TestCase):
                 '/api/v2/auth/register',
                 data=json.dumps(self.user_data)
                 )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
         new_credentials = {
             'email':self.user_data['email'],
