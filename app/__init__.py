@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+
 import jwt
 import datetime
 import re
@@ -11,6 +12,7 @@ db = SQLAlchemy()
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from .models import User, Event
+from app.models import User, BlackListToken
 
 
 from instance.config import app_config
@@ -36,7 +38,7 @@ def create_app(config_name):
                 return jsonify({'message' : 'Token is missing!'}), 401
 
             try:
-                data = jwt.decode(token, secret)
+                data = User.decode_auth_token(token)
                 current_user = User.query.filter_by(public_id=data["public_id"]).first()
             except:
                 return jsonify({'message' : 'Token is invalid!'}), 401
@@ -126,21 +128,21 @@ def create_app(config_name):
     	Logs out a user
     	"""
 
-    	auth = request.get_json()
-
-    	if not auth or auth['email'] == "" or auth['password'] == "":
-    		return jsonify({"message":"You need to be logged in"}), 400
-    	user = User.query.filter_by(email=auth["email"]).first()
-
-    	if not user:
-    		return jsonify({"message":"You need to be logged in"}), 400
-
-    	if check_password_hash(user.password, auth['password']):
-    		token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-
-    		return jsonify({'message' : "logout succesfull"}), 200
-
-    	return jsonify({"message":"You need to be logged in"}), 400
+    	auth_header = request.headers.get('x-access-token')
+        print auth_header
+        if auth_header:
+            try:
+                auth_token = auth_header.split(" ")[0]
+            except IndexError:
+                return jsonify({'message':'failed Provide a valid auth token'}), 403
+            else:
+                decoded_token_response = User.decode_auth_token(auth_token)
+                if not isinstance(decoded_token_response, str):
+                    token = BlackListToken(auth_token)
+                    token.blacklist()
+                    return jsonify({'message':'Successfully logged out'}), 200
+                return jsonify({'message':'failed'}), decoded_token_response, 401
+        return 'failed Provide an authorization header', 403
 
     #reset-password
     @app.route('/api/v2/auth/reset-password', methods=["POST"])
@@ -148,7 +150,7 @@ def create_app(config_name):
         """
         Resets password
         """
-        reset = request.get_json()
+        reset = request.get_json(force=True)
 
         if "email" not in reset or "oldPassword" not in reset or "newPassword" not in reset:
             return jsonify({"message":"All fields are required"})
@@ -171,7 +173,6 @@ def create_app(config_name):
 
 
     #create a new event
-
     @app.route('/api/v2/events', methods=['POST'])
     @token_required
     def create_event(current_user):

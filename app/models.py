@@ -1,9 +1,44 @@
 #MODELs
 from flask import jsonify
-from . import db
+from app import db
 import datetime
 import re
+import jwt
+import os
 
+class BlackListToken(db.Model):
+    """
+    Table to store blacklisted/invalid auth tokens
+    """
+    __tablename__ = 'blacklist_token'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    token = db.Column(db.String(256), unique=True, nullable=False)
+    blacklisted_on = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, token):
+        self.token = token
+        self.blacklisted_on = datetime.datetime.now()
+
+    def blacklist(self):
+        """
+        Persist Blacklisted token in the database
+        :return:
+        """
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def check_blacklist(token):
+        """
+        Check to find out whether a token has already been blacklisted.
+        :param token: Authorization token
+        :return:
+        """
+        response = BlackListToken.query.filter_by(token=token).first()
+        if response:
+            return True
+        return False
 
 class User(db.Model):
     """
@@ -34,6 +69,24 @@ class User(db.Model):
 
         db.session.add(self)
         db.session.commit()
+
+    @staticmethod
+    def decode_auth_token(token):
+        """
+        Decoding the token to get the payload and then return the user Id in the payload['public_id']
+        """
+        secret = os.getenv('SECRET_KEY')
+
+        try:
+            payload = jwt.decode(token, secret)
+            is_token_blacklisted = BlackListToken.check_blacklist(token)
+            if is_token_blacklisted:
+                return 'Token was Blacklisted, Please login In'
+            return payload
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired, Please sign in again'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please sign in again'
 
     def __repr__(self):
         return "<User: {}>".format(self.name)

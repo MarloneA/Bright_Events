@@ -87,7 +87,23 @@ class TestAuth(unittest.TestCase):
         Test if a user can login
         """
 
-        return ""
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.user_data)
+                )
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client().post(
+                '/api/v2/auth/login',
+                data=json.dumps({"email":self.user_data["email"], "password":self.user_data["password"]})
+                )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Login succesfull", res.data)
+        self.assertIn("x-access-token", res.data)
+
 
     def test_already_logged_in(self):
         """
@@ -96,19 +112,65 @@ class TestAuth(unittest.TestCase):
 
         return ""
 
+
     def test_logout_user(self):
         """
         Test if a user has succesfully been logged out
         """
 
-        return ""
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.user_data)
+                )
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client().post(
+                '/api/v2/auth/login',
+                data=json.dumps({"email":self.user_data["email"], "password":self.user_data["password"]})
+                )
+        self.assertEqual(res.status_code, 200)
+
+        to_json = json.loads(res.data)
+
+        res = self.client().post(
+            '/api/v2/auth/logout',
+            headers={"x-access-token":to_json['x-access-token']}
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Successfully logged out",res.data)
+
+
 
     def test_reset_password(self):
         """
         Test if a User can reset their password
         """
 
-        return ""
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.user_data)
+                )
+        self.assertEqual(res.status_code, 200)
+
+        new_credentials = {
+            'email':self.user_data['email'],
+            'oldPassword':self.user_data['password'],
+            'newPassword':'paramour'
+        }
+
+        res = self.client().post(
+            '/api/v2/auth/reset-password',
+            data=json.dumps(new_credentials)
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("password has been updated succesfully", res.data)
+
 
     def tearDown(self):
         """teardown all initialized variables."""
