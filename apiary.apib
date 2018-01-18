@@ -1,11 +1,11 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://andela-brightevents.herokuapp.com/
 
 # Bright Events
 
 Bright Events is an API that allows event organizers to create and manage different types of events. The platform also allows Users to to register accounts so that they can view, reserve edit and delete events they intend to attend
 
-## User Registration [api/v2/auth/register]
+## User Registration [/api/v2/auth/register]
 
 ### Register a user [POST]
 
@@ -24,39 +24,33 @@ password must be four(4) characters and more.
 
         {
             "message": "registration succesfull"
-
         }
 
 + Response 400 (application/json)
 
         {
             "message":"All fields are required"
-
         }
 
 + Response 400 (application/json)
 
         {
             "message":"Email has already been registered"
-
         }
 
 + Response 400 (application/json)
 
         {
             "message":"Empty field detected please fill all fields"
-
         }
 + Response 400 (application/json)
 
         {
             "message":"Enter a valid email address"
-
         }
 
 
-
-## Login [api/v2/auth/login]
+## Login [/api/v2/auth/login]
 
 ### Login a user [POST]
 You can login a user by sending their email and password. Please take note
@@ -80,25 +74,22 @@ of the auth token for you will need it for all user requests.
 
         {
             "message":"Invalid email/password"
-
         }
 
 + Response 401 (application/json)
 
         {
             "message":"Incorrect password"
-
         }
 
 + Response 401 (application/json)
 
         {
             "message":"Could not verify"
-
         }
 
 
-## Logout [api/v2/auth/logout]
+## Logout [/api/v2/auth/logout]
 
 ### Log out a user [POST]
 
@@ -107,25 +98,23 @@ auth token will then be blacklisted.
 
 + Request (application/json)
 
-        + Headers
+    + Headers
 
-            x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjMsImV4cCI6MTUxNjI5MDc5MX0.wTgVgRFTK83bFmdn6McFNk74D3r4gY91cuwYTAq05mc"
+        x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjMsImV4cCI6MTUxNjI5MDc5MX0.wTgVgRFTK83bFmdn6McFNk74D3r4gY91cuwYTAq05mc"
 
 + Response 200 (application/json)
 
         {
-            'message':'Successfully logged out'
-
+            "message":"Successfully logged out"
         }
 
 + Response 401 (application/json)
 
         {
-            'message':'failed Provide a valid auth token'
-
+            "message":"failed Provide a valid auth token"
         }
 
-## Reset-Password [api/v2/auth/reset-password]
+## Reset-Password [/api/v2/auth/reset-password]
 
 ### Reset password [POST]
 
@@ -143,32 +132,28 @@ You can change your password by sending passing your old credentials through the
 
         {
             "message":"password has been updated succesfully"
-
         }
 
 + Response 400 (application/json)
 
         {
             "message":"All fields are required"
-
         }
 
 + Response 401 (application/json)
 
         {
             "message":"email address could not be found"
-
         }
 
 + Response 401 (application/json)
 
         {
             "message":"old-password is invalid"
-
         }
 
 
-## Event Resources [api/v2/events]
+## Event Resources [/api/v2/events]
 
 You can perfom C.R.U.D operations on the API
 
@@ -203,24 +188,21 @@ will be returned as seen in the log out section.
 
         {
           "message":"new event has been created"
-
         }
 
 + Response 400 (application/json)
 
         {
           "message":"Empty field set detected"
-
         }
 
 + Response 400 (application/json)
 
         {
           "message":"An event with a similar title already exists"
-
         }
 
-## Retrieve events [api/v2/events]
+## Retrieve events [/api/v2/events]
 
 ### Retrieve all Events [GET]
 
@@ -228,9 +210,9 @@ You can get a list of all the Events the results are paginated total results and
 
 + Request (application/json)
 
-        + Headers
+    + Headers
 
-                x-access-token: JWT
+            x-access-token: JWT
 
 
 + Response 200 (application/json)
@@ -257,12 +239,13 @@ You can get a list of all the Events the results are paginated total results and
             "total_pages": 1
         }
 
-## Update [api/v2/events/{eventTitle}]
+## Update [/api/v2/events/{eventTitle}]
 
 + Parameters
+
     + eventTitle (required,string) - Title of the event to be updated
 
-### Edit an Event [PUT]
+### Update an Event [PUT]
 
 You can update the details of an Event
 
@@ -297,10 +280,9 @@ You can update the details of an Event
 
         {
              "message" : "The requested event was not found!"
-
         }
 
-## Delete resource [api/v2/events/{eventTitle}]
+## Delete resource [/api/v2/events/{eventTitle}]
 
 + Parameters
     + eventTitle (required,string) - Title of the event to be deleted
@@ -309,53 +291,53 @@ You can update the details of an Event
 
 + Request (application/json)
 
-        + Headers
+    + Headers
 
-                x-access-token: JWT
+            x-access-token: JWT
 
 + Response 200 (application/json)
 
         {
           "message" : "The event has been deleted!"
-
         }
 
 + Response 400 (application/json)
 
         {
           "message" : "The requested event was not found!"
-
         }
 
 
-## RSVP resource [api/v2/event/{eventId}/rsvp]
-
-+ Parameters
-    + eventId (required,number) - Title of the event to be deleted
+## RSVP resource [/api/v2/event/{eventId}/rsvp]
 
 ### Reserve for an Event [POST]
 
+An User can reserve for an event by passing the correct title of the event in the param section
+
++ Parameters
+
++ eventId (required, string) - Title of the event to be deleted
+
+
 + Request (application/json)
 
-        + Headers
+    + Headers
 
-                x-access-token: JWT
+            x-access-token: JWT
 
 + Response 200 (application/json)
 
         {
            "message":"Welcome John your reservation has been approved"
-
         }
 
 + Response 403 (application/json)
 
         {
           "message": "you have already reserved for Jorbateh"
-
         }
 
-## RSVP resource [api/v2/event/{eventId}/rsvp]
+## RSVP resource [/api/v2/event/{eventId}/rsvp]
 
 + Parameters
     + eventId (required,number) - Title of the event to be deleted
@@ -364,9 +346,9 @@ You can update the details of an Event
 
 + Request (application/json)
 
-        + Headers
+    + Headers
 
-                x-access-token: JWT
+            x-access-token: JWT
 
 + Response 200 (application/json)
 
@@ -392,11 +374,10 @@ You can update the details of an Event
 
         {
            "message":"Please Enter a valid event title"
-
         }
 
 
-## Search events resources [api/v2/events/<searchQuery>]
+## Search events resources [/api/v2/events/<searchQuery>]
 
 + Parameters
     + searchQuery (required,string) - a part of the string title being queried
@@ -429,7 +410,7 @@ You can search through the Events, the results are paginated total results and c
             "total_pages": 1
         }
 
-## Filter event resources [api/v2/events/category/<category>]
+## Filter event resources [/api/v2/events/category/<category>]
 
 + Parameters
     + category (required,string) - category of the event
@@ -462,7 +443,7 @@ You can filter events based on the category.
             "total_pages": 1
         }
 
-## Filter event resources [api/v2/events/location/<category>]
+## Filter event resources [/api/v2/events/location/<category>]
 
 + Parameters
     + location (required,string) - location of the event

@@ -50,7 +50,7 @@ def create_app(config_name):
     #Render documentation as root of the api
     @app.route('/')
     def index():
-        return render_template('api_doc.html')
+        return render_template('api.html')
 
     #User registration
     @app.route('/api/v2/auth/register', methods=['POST'])
