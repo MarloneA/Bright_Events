@@ -11,8 +11,8 @@ db = SQLAlchemy()
 
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-from .models import User, Event
-from app.models import User, BlackListToken
+from .models import User, Event, BlackListToken
+
 
 
 from instance.config import app_config
@@ -129,7 +129,6 @@ def create_app(config_name):
     	"""
 
     	auth_header = request.headers.get('x-access-token')
-        print auth_header
         if auth_header:
             try:
                 auth_token = auth_header.split(" ")[0]
@@ -284,7 +283,7 @@ def create_app(config_name):
 
         	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items}), 200
 
-    #Reserves an event
+    #Reserves for an event
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
     @token_required
     def rsvp_event(current_user, eventId):
@@ -297,15 +296,15 @@ def create_app(config_name):
         event = Event.query.filter_by(title=eventId).first()
 
         guests = event.user
-        guests.append(usr)
+        if usr in guests:
+            return jsonify({"message":"you have already reserved for "+event.title}), 403
+        else:
+            guests.append(usr)
+            db.session.commit()
 
-        output = []
-        for guest in guests:
-            rsv = {}
-            rsv['name'] = guest.name
-            output.append(rsv)
+        return jsonify({'message':'Welcome ' + current_user.name +', your reservation has been approved'}), 200
 
-        return jsonify({'message':'reservation approved', 'guests':output})
+
 
     #Retrieves a list of users who have reserved for an event
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
@@ -317,15 +316,19 @@ def create_app(config_name):
 
         event = Event.query.filter_by(title=eventId).first()
 
+        if not event:
+            return jsonify({"message":"Please Enter a valid event title"}), 404
+
         guests = event.user
 
         output = []
         for guest in guests:
-            rsv = {}
-            rsv['name'] = guest.name
-            output.append(rsv)
+            attendees = {}
+            attendees['name'] = guest.name
+            attendees['email'] = guest.email
+            output.append(attendees)
 
-        return jsonify({'message':output})
+        return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
 
 
     #filter by category

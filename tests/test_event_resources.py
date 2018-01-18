@@ -318,14 +318,69 @@ class TestEvent(unittest.TestCase):
         Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest
         """
 
-        return ""
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(self.event_data)
+                )
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().post(
+                '/api/v2/event/daraja/rsvp',
+                headers=head
+                )
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Welcome test, your reservation has been approved", res.data)
+
+
 
     def test_retrieve_reserved_guests(self):
         """
         Test that API endpoint '/api/event/<eventId>/rsvp' retrieves event guests
         """
 
-        return ""
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(self.event_data)
+                )
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().post(
+                '/api/v2/event/daraja/rsvp',
+                headers=head
+                )
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client().get(
+                '/api/v2/event/daraja/rsvp',
+                headers=head
+                )
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Guests attending daraja", res.data)
+        self.assertIn("user@test.com", res.data)
+        self.assertIn("test", res.data)
+
+
+
 
     def test_render_api_as_root(self):
         """
