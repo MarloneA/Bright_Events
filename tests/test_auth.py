@@ -105,14 +105,6 @@ class TestAuth(unittest.TestCase):
         self.assertIn("x-access-token", res.data)
 
 
-    def test_already_logged_in(self):
-        """
-        Test if a user is already logged in
-        """
-
-        return ""
-
-
     def test_logout_user(self):
         """
         Test if a user has succesfully been logged out

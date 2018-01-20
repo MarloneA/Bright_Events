@@ -280,7 +280,7 @@ def create_app(config_name):
             guests.append(usr)
             db.session.commit()
 
-        return jsonify({'message':'Welcome ' + current_user.name +', your reservation has been approved'}), 200
+        return jsonify({'message':'Welcome ' + current_user.name +', your reservation for the event '+event.title+' has been approved'}), 200
 
     #Retrieves Reservations
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])

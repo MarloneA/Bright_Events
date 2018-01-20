@@ -254,8 +254,6 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(to_json["total_pages"], 1)
 
 
-
-
     def test_filter_event_by_location(self):
         """
         Test that API endpoint '/api/v2/events/location/<location>' filters events by location
@@ -339,8 +337,7 @@ class TestEvent(unittest.TestCase):
                 headers=head
                 )
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome test, your reservation has been approved", res.data)
-
+        self.assertIn("Welcome test, your reservation for the event daraja has been approved", res.data)
 
 
     def test_retrieve_reserved_guests(self):
