@@ -7,7 +7,7 @@ services:
   - postgresql
 
 before_install:
-  - export DATABASE_URL='postgresql://postgres@localhost/travis_ci_test'
+  - export DATABASE_URL='postgresql://marlone911@localhost/travis_ci_test'
   - export FLASK_CONFIG="testing"
 
 install:
