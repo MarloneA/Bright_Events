@@ -7,7 +7,8 @@ services:
   - postgresql
 
 before_install:
-  - export DATABASE_URL='postgresql://marlone911:bev@localhost:5432/newbev'
+  - export DATABASE_URL='postgresql://postgres@localhost/travis_ci_test'
+  - export FLASK_CONFIG="testing"
 
 install:
   - pip install -r requirements.txt
