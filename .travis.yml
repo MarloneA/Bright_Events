@@ -21,9 +21,8 @@ before_script:
 
 
 script:
-  # - nosetests --with-coverage --cover-package=app
   - python manage.py test --coverage
-  - coverage run --source=app setup.py test
+  - nosetests --with-coverage --cover-package=app
 
 after_script:
   - coveralls
