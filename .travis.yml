@@ -16,7 +16,7 @@ install:
 
 before_script:
   - sudo -u postgres createuser marlone911
-  - psql -c 'create database test_bev;' -U marlone911
+  - psql -c 'create database test_bev;' -U postgres
 
 
 script:
