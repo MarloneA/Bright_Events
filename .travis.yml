@@ -7,7 +7,7 @@ services:
   - postgresql
 
 before_install:
-  - export DATABASE_URL='postgresql://postgres@localhost/test_bev'
+  - export DATABASE_URL='postgresql://marlone911:@localhost/test_bev'
   - export FLASK_CONFIG="testing"
 
 install:
