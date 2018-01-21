@@ -175,30 +175,30 @@ def create_app(config_name):
     @app.route('/api/v2/events', methods=['POST'])
     @token_required
     def create_event(current_user):
-    	"""
-    	Creates an event
-    	"""
+        """
+        Creates an event
+        """
 
-    	events = request.get_json(force=True)
-    	evnt = Event.query.filter_by(title=events["title"]).first()
+        events = request.get_json(force=True)
+        evnt = Event.query.filter_by(title=events["title"]).first()
 
-    	if evnt:
-    		return jsonify({"message":"An event with a similar title already exists"}), 400
+        if evnt:
+        	return jsonify({"message":"An event with a similar title already exists"}), 400
         if events['title'] == "" or events['category'] == "" or events['location'] == "" or events['description'] == "":
             return jsonify({"message":"Empty field set detected"}), 400
 
-    	new_event = Event(
-    	                    title=events['title'],
-    	                    category=events['category'],
-    	                    location=events['location'],
-    	                    description=events['description']
-    	                    )
-    	new_event.save()
+        new_event = Event(
+                            title=events['title'],
+                            category=events['category'],
+                            location=events['location'],
+                            description=events['description']
+                            )
+        new_event.save()
 
         response = jsonify({"message":"new event has been created"})
         response.status_code = 201
 
-    	return response
+        return response
 
     #Retrieve Events
     @app.route('/api/v2/events', methods=['GET'])
@@ -310,15 +310,15 @@ def create_app(config_name):
     @app.route('/api/v2/events/<searchQuery>', methods=['GET'])
     def get_one_event(searchQuery):
 
-    	results = Event.query.filter(Event.title.like('%'+searchQuery+'%')).paginate(page=None, per_page=2)
+        results = Event.query.filter(Event.title.like('%'+searchQuery+'%')).paginate(page=None, per_page=2)
 
         search_results = results.items
         num_results = results.total
         total_pages = results.pages
         current_page = results.page
 
-    	if not results.items:
-    		return jsonify({'message' : 'event not found!'}), 400
+        if not results.items:
+        	return jsonify({'message' : 'event not found!'}), 400
 
         else:
 
@@ -332,14 +332,14 @@ def create_app(config_name):
     @app.route('/api/v2/events/category/<category>', methods=['GET'])
     def filter_all_categories(category):
 
-    	event = Event.query.filter_by(category=category).paginate(page=None, per_page=2)
+        event = Event.query.filter_by(category=category).paginate(page=None, per_page=2)
 
         filter_results = event.items
         num_results = event.total
         total_pages = event.pages
         current_page = event.page
 
-    	if not event:
+        if not event:
             return jsonify({"message":"no events found for the selected category"}), 401
 
 
@@ -354,14 +354,14 @@ def create_app(config_name):
     @app.route('/api/v2/events/location/<location>', methods=['GET'])
     def filter_all_locations(location):
 
-    	event = Event.query.filter_by(location=location).paginate(page=None, per_page=2)
+        event = Event.query.filter_by(location=location).paginate(page=None, per_page=2)
 
         filter_results = event.items
         num_results = event.total
         total_pages = event.pages
         current_page = event.page
 
-    	if not event:
+        if not event:
             return jsonify({"message":"no events found for the selected location"}), 401
 
 
