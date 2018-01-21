@@ -161,12 +161,12 @@ def create_app(config_name):
 
         if check_password_hash(user.password, reset['oldPassword']):
 
-    		new_hashed_password = generate_password_hash(reset['newPassword'], method='sha256')
-    		user.password = new_hashed_password
+        	new_hashed_password = generate_password_hash(reset['newPassword'], method='sha256')
+        	user.password = new_hashed_password
 
-    		db.session.commit()
+        	db.session.commit()
 
-    		return jsonify({"message":"password has been updated succesfully"}), 200
+        	return jsonify({"message":"password has been updated succesfully"}), 200
 
         return jsonify({"message":"old-password is invalid"}), 401
 
