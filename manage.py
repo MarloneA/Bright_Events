@@ -31,7 +31,10 @@ def test(coverage=False):
         os.execvp(sys.executable, [sys.executable] + sys.argv)
 
     tests = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner(verbosity=2).run(tests)
+    test_results = unittest.TextTestRunner(verbosity=2).run(tests)
+    if test_results.wasSuccessful():
+        return 0
+    return 1
 
     if COV:
         COV.stop()

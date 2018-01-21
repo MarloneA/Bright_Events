@@ -19,6 +19,10 @@ class TestAuth(unittest.TestCase):
             'email': 'admin@Admin.com',
             'password': 'admin'
         }
+        self.login_data = {
+            'email': 'admin@Admin.com',
+            'password': 'admin'
+        }
 
         # binds the app to the current context
         with self.app.app_context():
@@ -97,7 +101,7 @@ class TestAuth(unittest.TestCase):
 
         res = self.client().post(
                 '/api/v2/auth/login',
-                data=json.dumps({"email":self.user_data["email"], "password":self.user_data["password"]})
+                data=json.dumps(self.login_data)
                 )
 
         self.assertEqual(res.status_code, 200)
@@ -120,7 +124,7 @@ class TestAuth(unittest.TestCase):
 
         res = self.client().post(
                 '/api/v2/auth/login',
-                data=json.dumps({"email":self.user_data["email"], "password":self.user_data["password"]})
+                data=json.dumps(self.login_data)
                 )
         self.assertEqual(res.status_code, 200)
 
