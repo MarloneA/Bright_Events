@@ -124,11 +124,11 @@ def create_app(config_name):
     @app.route('/api/v2/auth/logout', methods=["POST"])
     @token_required
     def logout(current_user):
-    	"""
-    	Logs out a user
-    	"""
+        """
+        Logs out a user
+        """
 
-    	auth_header = request.headers.get('x-access-token')
+        auth_header = request.headers.get('x-access-token')
         if auth_header:
             try:
                 auth_token = auth_header.split(" ")[0]

@@ -8,5 +8,6 @@
 *.DS_Store
 *.pyc
 .env
+.idea
 
 sample.apib
