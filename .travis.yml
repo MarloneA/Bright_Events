@@ -7,7 +7,7 @@ services:
   - postgresql
 
 before_install:
-  - export DATABASE_URL='postgresql://marlone911@localhost/travis_ci_test'
+  - export DATABASE_URL='postgresql://postgres@localhost/travis_ci_test'
   - export FLASK_CONFIG="testing"
 
 install:
@@ -16,8 +16,6 @@ install:
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
-  - python manage.py db migrate
-  - python manage.py db upgrade
 
 script:
   - nosetests --with-coverage --cover-package=app
