@@ -9,6 +9,7 @@ services:
 before_install:
   - export DATABASE_URL='postgresql://marlone911:@localhost/test_bev'
   - export FLASK_CONFIG="testing"
+  - export SECRET_KEY="thisissecret"
 
 install:
   - pip install -r requirements.txt
