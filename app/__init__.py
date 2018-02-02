@@ -392,5 +392,30 @@ def create_app(config_name):
 
         return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":locations}), 200
 
+    @app.errorhandler(404)
+    def route_not_found(e):
+        """
+        Response message for missing or not found routes.
+        """
+
+        return jsonify({"message":"endpoint not found"}), 404
+
+
+    @app.errorhandler(405)
+    def method_not_found(e):
+        """
+        Response for methods not allowed for the requested URLs
+        """
+
+        return jsonify({"message":"method not allowed for the requested url"}), 405
+
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        """
+        Response for 500 internal error
+        """
+
+        return jsonify({"message":"Internal server error"}), 500
 
     return app
