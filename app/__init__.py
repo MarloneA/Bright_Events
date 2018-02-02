@@ -208,7 +208,7 @@ def create_app(config_name):
         	return jsonify({"message":"An event with a similar title already exists"}), 400
 
         new_event = Event(
-                            title=events['title'],
+                            title=events['title'].lower(),
                             category=events['category'],
                             location=events['location'],
                             description=events['description']
@@ -327,10 +327,10 @@ def create_app(config_name):
         return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
 
     #Search Event
-    @app.route('/api/v2/events/<searchQuery>', methods=['GET'])
-    def get_one_event(searchQuery):
+    @app.route('/api/v2/events/<q>', methods=['GET'])
+    def get_one_event(q):
 
-        results = Event.query.filter(Event.title.like('%'+searchQuery+'%')).paginate(page=None, per_page=2)
+        results = Event.query.filter(Event.title.like('%'+ q.lower() +'%')).paginate(page=None, per_page=2)
 
         search_results = results.items
         num_results = results.total
