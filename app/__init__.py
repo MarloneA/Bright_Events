@@ -71,17 +71,26 @@ def create_app(config_name):
     	if user:
     		return jsonify({"message":"Email has already been registered"}), 400
 
+        if type(data["name"]) == int:
+
+            return jsonify({"message":"name cannot be an integer"}), 400
+
     	if data['name'] == "" or data['email'] == "" or data['password'] == "":
 
     		return jsonify({"message":"Empty field detected please fill all fields"}), 400
+
+        if data['name'].split() == [] or data['email'].split() == [] or data['password'].split() == []:
+
+    		return jsonify({"message":"name/email/password fields cannot be empty"}), 400
 
     	if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
 
     		return jsonify({"message":"Enter a valid email address"}), 400
 
-    	if len(data['password']) < 4:
+    	if len(data['password'].split()[0]) < 4:
 
     		return jsonify({"message":"password should be at least 4 characters"}), 400
+
     	else:
 
     		new_user = User(name=data['name'], email=data["email"], password=hashed_password)
@@ -180,12 +189,23 @@ def create_app(config_name):
         """
 
         events = request.get_json(force=True)
+
+        if type(events["title"]) == int:
+
+            return jsonify({"message":"title cannot be an integer"}), 400
+
+        if events['title'] == "" or events['category'] == "" or events['location'] == "" or events['description'] == "":
+            return jsonify({"message":"Empty field set detected"}), 400
+
+        if events['title'].split() == []:
+
+    		return jsonify({"message":"Please provide a valid title"}), 400
+
+
         evnt = Event.query.filter_by(title=events["title"]).first()
 
         if evnt:
         	return jsonify({"message":"An event with a similar title already exists"}), 400
-        if events['title'] == "" or events['category'] == "" or events['location'] == "" or events['description'] == "":
-            return jsonify({"message":"Empty field set detected"}), 400
 
         new_event = Event(
                             title=events['title'],

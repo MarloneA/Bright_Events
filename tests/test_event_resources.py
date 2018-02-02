@@ -21,6 +21,18 @@ class TestEvent(unittest.TestCase):
             'location': 'nairobi',
             'description':'a small intimate setting for singers, musicians and poetry collaborations'
         }
+        self.empty_title = {
+            'title':'  ',
+            'category': 'showcase',
+            'location': 'nairobi',
+            'description':'a small intimate setting for singers, musicians and poetry collaborations'
+        }
+        self.int_title = {
+            'title':45,
+            'category': 'showcase',
+            'location': 'nairobi',
+            'description':'a small intimate setting for singers, musicians and poetry collaborations'
+        }
 
         # binds the app to the current context
         with self.app.app_context():
@@ -73,6 +85,52 @@ class TestEvent(unittest.TestCase):
 
         self.assertEqual(res.status_code, 201)
 
+
+    def test_create_event_with_empty_title(self):
+        """
+        Tests users ahould not be able to create titles with empty spaces
+        """
+
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(self.empty_title)
+                )
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("Please provide a valid title", res.data)
+
+    def test_create_event_with_title_as_integer(self):
+        """
+        Test users should not be able to supply integers as titles
+        """
+
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(self.int_title)
+                )
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("title cannot be an integer", res.data)
 
     def test_retrieve_events(self):
         """

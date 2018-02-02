@@ -23,6 +23,17 @@ class TestAuth(unittest.TestCase):
             'email': 'admin@Admin.com',
             'password': 'admin'
         }
+        self.empty_data = {
+            'name':'  ',
+            'email': '  ',
+            'password': '  '
+        }
+        self.int_data = {
+            'name':3,
+            'email': 'admin@Admin.com',
+            'password': 'admin'
+        }
+
 
         # binds the app to the current context
         with self.app.app_context():
@@ -63,6 +74,36 @@ class TestAuth(unittest.TestCase):
 
         self.assertEqual(res.status_code, 201)
         self.assertIn("registration succesfull", res.data)
+
+    def test_register_user_with_spaces(self):
+        """
+        Test that a user cannot register with empty spaces
+        """
+
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.empty_data)
+                )
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("name/email/password fields cannot be empty", res.data)
+
+    def test_register_with_name_as_integer(self):
+        """
+        Users should not register with names as integers
+        """
+
+        self.charVarying()
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(self.int_data)
+                )
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("name cannot be an integer", res.data)
 
     def test_if_account_is_already_registered(self):
         """
