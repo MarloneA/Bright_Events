@@ -101,8 +101,13 @@ class Event(db.Model):
     category = db.Column(db.String(50))
     location = db.Column(db.String(50))
     description = db.Column(db.String)
+    created_on = db.Column(db.DateTime)
+    created_by = db.Column(db.String)
+    modified_on = db.Column(db.DateTime)
+    date_of_event = db.Column(db.String(255))
 
-    def __init__(self, title, category, location, description):
+
+    def __init__(self, title, category, location, description, created_by, date_of_event):
 
         """
         Initialise event details
@@ -111,6 +116,11 @@ class Event(db.Model):
         self.category = category
         self.location = location
         self.description = description
+        self.created_on = datetime.datetime.utcnow()
+        self.modified_on = datetime.datetime.utcnow()
+        self.created_by = created_by
+        self.date_of_event = date_of_event
+
 
     def save(self):
         """
@@ -144,7 +154,10 @@ class Event(db.Model):
             'title':self.title,
             'location':self.location,
             'category':self.category,
-            'description':self.description
+            'description':self.description,
+            'created_on':self.created_on,
+            'created_by':self.created_by,
+            'date_of_event':self.date_of_event
         }
 
     def __repr__(self):
