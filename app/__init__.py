@@ -211,7 +211,9 @@ def create_app(config_name):
                             title=events['title'].lower(),
                             category=events['category'],
                             location=events['location'],
-                            description=events['description']
+                            description=events['description'],
+                            date_of_event=events['date_of_event'],
+                            created_by=current_user.email
                             )
         new_event.save()
 
@@ -220,7 +222,7 @@ def create_app(config_name):
 
         return response
 
-    #Retrieve Events
+    #Retrieve all Events
     @app.route('/api/v2/events', methods=['GET'])
     @token_required
     def retrieve_events(current_user):
@@ -229,6 +231,27 @@ def create_app(config_name):
         """
 
         Events = Event.query.paginate(page=None, per_page=2)
+
+        evnts = Events.items
+        num_results = Events.total
+        total_pages = Events.pages
+        current_page = Events.page
+
+        output = []
+        for event in evnts:
+            output.append(event.json())
+
+        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
+
+    #Retrieve my Events
+    @app.route('/api/v2/events/myevents', methods=['GET'])
+    @token_required
+    def retrieve_my_events(current_user):
+        """
+        Retrieves events
+        """
+
+        Events = Event.query.filter_by(created_by=current_user.email).paginate(page=None, per_page=2)
 
         evnts = Events.items
         num_results = Events.total
@@ -256,6 +279,10 @@ def create_app(config_name):
         if not event:
             return jsonify({'message' : 'The requested event was not found!'}), 400
 
+        if event.created_by != current_user.email:
+
+            return jsonify({'message':'You do not have enough permissions to edit this event'}), 401
+
         event.title = update_data['title']
         event.category = update_data['category']
         event.location = update_data['location']
@@ -274,6 +301,10 @@ def create_app(config_name):
 
         event = Event.query.filter_by(title=eventTitle).first()
 
+        if event.created_by != current_user.email:
+
+            return jsonify({'message':'You do not have enough permissions to delete this event'}), 401
+
         if not event:
             return jsonify({'message' : 'The requested event was not found!'}), 400
 
@@ -283,24 +314,61 @@ def create_app(config_name):
 
     #Create Reservation
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
-    @token_required
-    def rsvp_event(current_user, eventId):
+    def rsvp_event(eventId):
         """
         Allows a user to RSVP for an event
         """
 
-        usr = User.query.filter_by(name=current_user.name).first()
+        #Get request data from user
+        data = request.get_json(force=True)
 
-        event = Event.query.filter_by(title=eventId).first()
+        #Check if the user has entered a valid email address
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
 
-        guests = event.user
-        if usr in guests:
-            return jsonify({"message":"you have already reserved for "+event.title}), 403
+    		return jsonify({"message":"Enter a valid email address"}), 400
+
+        #Check if the user is registered
+        usr = User.query.filter_by(email=data["email"]).first()
+
+        #if the user is not registered, register the email and send a temp pass
+        if not usr:
+
+            hashed_password = generate_password_hash("12345", method='sha256')
+
+            new_user = User(name=data['email'], email=data["email"], password=hashed_password)
+
+            new_user.save()
+
+            new_usr = User.query.filter_by(email=data["email"]).first()
+
+            #Check for the event in question
+            event = Event.query.filter_by(title=eventId).first()
+
+            guests = event.user
+
+            if new_usr in guests:
+                return jsonify({"message":"you have already reserved for "+event.title}), 403
+            else:
+                guests.append(new_usr)
+                db.session.commit()
+
+            return jsonify({
+                                "message":'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved',
+                                "Important":"Your temporary password is 12345, please login and change it to a much safer password"
+                                }), 200
+
         else:
-            guests.append(usr)
-            db.session.commit()
 
-        return jsonify({'message':'Welcome ' + current_user.name +', your reservation for the event '+event.title+' has been approved'}), 200
+            event = Event.query.filter_by(title=eventId).first()
+
+            guests = event.user
+            if usr in guests:
+                return jsonify({"message":"you have already reserved for "+event.title}), 403
+            else:
+                guests.append(usr)
+                db.session.commit()
+
+            return jsonify({'message':'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved'}), 200
 
     #Retrieves Reservations
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
@@ -314,6 +382,10 @@ def create_app(config_name):
 
         if not event:
             return jsonify({"message":"Please Enter a valid event title"}), 403
+
+        if event.created_by != current_user.email:
+
+            return jsonify({"message":"You do not have enough permissions to view this information"}), 401
 
         guests = event.user
 
