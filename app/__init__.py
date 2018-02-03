@@ -230,18 +230,32 @@ def create_app(config_name):
         Retrieves events
         """
 
-        Events = Event.query.paginate(page=None, per_page=2)
+        Events = Event.query.paginate(page=None, per_page=10)
 
         evnts = Events.items
         num_results = Events.total
         total_pages = Events.pages
         current_page = Events.page
+        has_next_page = Events.has_next
+        has_prev_page = Events.has_prev
+        prev_num = Events.prev_num
+        next_num = Events.next_num
 
         output = []
         for event in evnts:
             output.append(event.json())
 
-        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
+        return jsonify({
+                            "total results": num_results,
+                            "total pages": total_pages,
+                            "cur page": current_page,
+                            "Events":output,
+                            "next page":has_next_page,
+                            "prev page":has_prev_page,
+                            "prev page num":prev_num,
+                            "next page num":next_num
+
+                            }), 200
 
     #Retrieve my Events
     @app.route('/api/v2/events/myevents', methods=['GET'])
@@ -251,18 +265,32 @@ def create_app(config_name):
         Retrieves events
         """
 
-        Events = Event.query.filter_by(created_by=current_user.email).paginate(page=None, per_page=2)
+        Events = Event.query.filter_by(created_by=current_user.email).paginate(page=None, per_page=10)
 
         evnts = Events.items
         num_results = Events.total
         total_pages = Events.pages
         current_page = Events.page
+        has_next_page = Events.has_next
+        has_prev_page = Events.has_prev
+        prev_num = Events.prev_num
+        next_num = Events.next_num
 
         output = []
         for event in evnts:
             output.append(event.json())
 
-        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"Events":output}), 200
+        return jsonify({
+                            "total results": num_results,
+                            "total pages": total_pages,
+                            "cur page": current_page,
+                            "Events":output,
+                            "next page":has_next_page,
+                            "prev page":has_prev_page,
+                            "prev page num":prev_num,
+                            "next page num":next_num
+
+                            }), 200
 
     #Update Event
     @app.route('/api/v2/events/<string:eventTitle>', methods=['PUT'])
@@ -402,12 +430,16 @@ def create_app(config_name):
     @app.route('/api/v2/events/<q>', methods=['GET'])
     def get_one_event(q):
 
-        results = Event.query.filter(Event.title.like('%'+ q.lower() +'%')).paginate(page=None, per_page=2)
+        results = Event.query.filter(Event.title.like('%'+ q.lower() +'%')).paginate(page=None, per_page=10)
 
         search_results = results.items
         num_results = results.total
         total_pages = results.pages
         current_page = results.page
+        has_next_page = results.has_next
+        has_prev_page = results.has_prev
+        prev_num = results.prev_num
+        next_num = results.next_num
 
         if not results.items:
         	return jsonify({'message' : 'event not found!'}), 400
@@ -418,18 +450,32 @@ def create_app(config_name):
         	for evnt in search_results:
         		items.append(evnt.json())
 
-        	return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1search_results":items}), 200
+        	return jsonify({
+                                "total results": num_results,
+                                "total pages": total_pages,
+                                "cur page": current_page,
+                                "next page":has_next_page,
+                                "prev page":has_prev_page,
+                                "Search_Results":items,
+                                "prev page num":prev_num,
+                                "next page num":next_num,
+
+                                }), 200
 
     #Filter Events by Category
     @app.route('/api/v2/events/category/<category>', methods=['GET'])
     def filter_all_categories(category):
 
-        event = Event.query.filter_by(category=category).paginate(page=None, per_page=2)
+        event = Event.query.filter_by(category=category).paginate(page=None, per_page=10)
 
         filter_results = event.items
         num_results = event.total
         total_pages = event.pages
         current_page = event.page
+        has_next_page = event.has_next
+        has_prev_page = event.has_prev
+        prev_num = event.prev_num
+        next_num = event.next_num
 
         if not event:
             return jsonify({"message":"no events found for the selected category"}), 401
@@ -440,18 +486,32 @@ def create_app(config_name):
         for evnt in filter_results:
         	categories.append(evnt.json())
 
-        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":categories}), 200
+        return jsonify({
+                            "total results": num_results,
+                            "total pages": total_pages,
+                            "cur page": current_page,
+                            "next page":has_next_page,
+                            "prev page":has_prev_page,
+                            "prev page num":prev_num,
+                            "next page num":next_num,
+                            "Filter_Results":categories
+
+                            }), 200
 
     #Filter Events by Location
     @app.route('/api/v2/events/location/<location>', methods=['GET'])
     def filter_all_locations(location):
 
-        event = Event.query.filter_by(location=location).paginate(page=None, per_page=2)
+        event = Event.query.filter_by(location=location).paginate(page=None, per_page=10)
 
         filter_results = event.items
         num_results = event.total
         total_pages = event.pages
         current_page = event.page
+        has_next_page = event.has_next
+        has_prev_page = event.has_prev
+        prev_num = event.prev_num
+        next_num = event.next_num
 
         if not event:
             return jsonify({"message":"no events found for the selected location"}), 401
@@ -462,7 +522,17 @@ def create_app(config_name):
         for evnt in filter_results:
         	locations.append(evnt.json())
 
-        return jsonify({"num_results": num_results, "total_pages": total_pages, "page": current_page,"1filter_results":locations}), 200
+        return jsonify({
+                            "total results": num_results,
+                            "total pages": total_pages,
+                            "cur page": current_page,
+                            "next page":has_next_page,
+                            "prev page":has_prev_page,
+                            "prev page num":prev_num,
+                            "next page num":next_num,
+                            "Filter_Results":locations
+
+                            }), 200
 
     @app.errorhandler(404)
     def route_not_found(e):
