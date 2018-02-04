@@ -223,14 +223,13 @@ def create_app(config_name):
         return response
 
     #Retrieve all Events
-    @app.route('/api/v2/events', methods=['GET'])
-    @token_required
-    def retrieve_events(current_user):
+    @app.route('/api/v2/events/<int:results>/<int:page_num>', methods=['GET'])
+    def retrieve_events(results, page_num):
         """
         Retrieves events
         """
 
-        Events = Event.query.paginate(page=None, per_page=10)
+        Events = Event.query.paginate(page=page_num, per_page=results)
 
         evnts = Events.items
         num_results = Events.total
@@ -250,22 +249,22 @@ def create_app(config_name):
                             "total pages": total_pages,
                             "cur page": current_page,
                             "Events":output,
-                            "next page":has_next_page,
-                            "prev page":has_prev_page,
-                            "prev page num":prev_num,
-                            "next page num":next_num
+                            # "next page":has_next_page,
+                            # "prev page":has_prev_page,
+                            "prev page":prev_num,
+                            "next page":next_num
 
                             }), 200
 
     #Retrieve my Events
-    @app.route('/api/v2/events/myevents', methods=['GET'])
+    @app.route('/api/v2/events/myevents/<int:results>/<int:page_num>', methods=['GET'])
     @token_required
-    def retrieve_my_events(current_user):
+    def retrieve_my_events(current_user, results, page_num):
         """
         Retrieves events
         """
 
-        Events = Event.query.filter_by(created_by=current_user.email).paginate(page=None, per_page=10)
+        Events = Event.query.filter_by(created_by=current_user.email).paginate(page=page_num, per_page=results)
 
         evnts = Events.items
         num_results = Events.total
@@ -285,23 +284,21 @@ def create_app(config_name):
                             "total pages": total_pages,
                             "cur page": current_page,
                             "Events":output,
-                            "next page":has_next_page,
-                            "prev page":has_prev_page,
-                            "prev page num":prev_num,
-                            "next page num":next_num
+                            "prev page":prev_num,
+                            "next page":next_num
 
                             }), 200
 
     #Update Event
-    @app.route('/api/v2/events/<string:eventTitle>', methods=['PUT'])
+    @app.route('/api/v2/events/<eventId>', methods=['PUT'])
     @token_required
-    def update_event(current_user, eventTitle):
+    def update_event(current_user, eventId):
         """
         Updates an Event
         """
 
         update_data = request.get_json(force=True)
-        event = Event.query.filter_by(title=eventTitle).first()
+        event = Event.query.filter_by(id=eventId).first()
 
 
         if not event:
@@ -320,14 +317,14 @@ def create_app(config_name):
         return jsonify({'message' : 'The event has been updated!'}), 200
 
     #Delete Event
-    @app.route('/api/v2/events/<eventTitle>', methods=['DELETE'])
+    @app.route('/api/v2/events/<eventId>', methods=['DELETE'])
     @token_required
-    def delete_event(current_user, eventTitle):
+    def delete_event(current_user, eventId):
         """
         Deletes an event
         """
 
-        event = Event.query.filter_by(title=eventTitle).first()
+        event = Event.query.filter_by(id=eventId).first()
 
         if event.created_by != current_user.email:
 
@@ -427,10 +424,10 @@ def create_app(config_name):
         return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
 
     #Search Event
-    @app.route('/api/v2/events/<q>', methods=['GET'])
-    def get_one_event(q):
+    @app.route('/api/v2/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
+    def get_one_event(q, results, page_num):
 
-        results = Event.query.filter(Event.title.like('%'+ q.lower() +'%')).paginate(page=None, per_page=10)
+        results = Event.query.filter(Event.title.like('%'+ q.lower() +'%')).paginate(page=page_num, per_page=results)
 
         search_results = results.items
         num_results = results.total
@@ -440,6 +437,7 @@ def create_app(config_name):
         has_prev_page = results.has_prev
         prev_num = results.prev_num
         next_num = results.next_num
+
 
         if not results.items:
         	return jsonify({'message' : 'event not found!'}), 400
@@ -454,19 +452,17 @@ def create_app(config_name):
                                 "total results": num_results,
                                 "total pages": total_pages,
                                 "cur page": current_page,
-                                "next page":has_next_page,
-                                "prev page":has_prev_page,
                                 "Search_Results":items,
-                                "prev page num":prev_num,
-                                "next page num":next_num,
+                                "prev page":prev_num,
+                                "next page":next_num,
 
                                 }), 200
 
     #Filter Events by Category
-    @app.route('/api/v2/events/category/<category>', methods=['GET'])
-    def filter_all_categories(category):
+    @app.route('/api/v2/events/category/<category>/<int:results>/<int:page_num>', methods=['GET'])
+    def filter_all_categories(category, results, page_num):
 
-        event = Event.query.filter_by(category=category).paginate(page=None, per_page=10)
+        event = Event.query.filter_by(category=category).paginate(page=page_num, per_page=results)
 
         filter_results = event.items
         num_results = event.total
@@ -490,19 +486,17 @@ def create_app(config_name):
                             "total results": num_results,
                             "total pages": total_pages,
                             "cur page": current_page,
-                            "next page":has_next_page,
-                            "prev page":has_prev_page,
-                            "prev page num":prev_num,
-                            "next page num":next_num,
+                            "prev page":prev_num,
+                            "next page":next_num,
                             "Filter_Results":categories
 
                             }), 200
 
     #Filter Events by Location
-    @app.route('/api/v2/events/location/<location>', methods=['GET'])
-    def filter_all_locations(location):
+    @app.route('/api/v2/events/location/<location>/<int:results>/<int:page_num>', methods=['GET'])
+    def filter_all_locations(location, results, page_num):
 
-        event = Event.query.filter_by(location=location).paginate(page=None, per_page=10)
+        event = Event.query.filter_by(location=location).paginate(page=page_num, per_page=results)
 
         filter_results = event.items
         num_results = event.total
@@ -526,10 +520,8 @@ def create_app(config_name):
                             "total results": num_results,
                             "total pages": total_pages,
                             "cur page": current_page,
-                            "next page":has_next_page,
-                            "prev page":has_prev_page,
-                            "prev page num":prev_num,
-                            "next page num":next_num,
+                            "prev page":prev_num,
+                            "next page":next_num,
                             "Filter_Results":locations
 
                             }), 200
