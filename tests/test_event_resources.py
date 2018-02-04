@@ -19,18 +19,21 @@ class TestEvent(unittest.TestCase):
             'title':'daraja',
             'category': 'showcase',
             'location': 'nairobi',
+            'date_of_event':'22 March 2018',
             'description':'a small intimate setting for singers, musicians and poetry collaborations'
         }
         self.empty_title = {
             'title':'  ',
             'category': 'showcase',
             'location': 'nairobi',
+            'date_of_event':'22 March 2018',
             'description':'a small intimate setting for singers, musicians and poetry collaborations'
         }
         self.int_title = {
             'title':45,
             'category': 'showcase',
             'location': 'nairobi',
+            'date_of_event':'22 March 2018',
             'description':'a small intimate setting for singers, musicians and poetry collaborations'
         }
 
@@ -149,14 +152,14 @@ class TestEvent(unittest.TestCase):
         res = self.client().post('api/v2/events', headers=head, data=json.dumps(self.event_data))
         self.assertEqual(res.status_code, 201)
 
-        res = self.client().get('/api/v2/events', headers=head)
+        res = self.client().get('/api/v2/events/1/1', headers=head)
 
         to_json =  json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(to_json["num_results"], 1)
-        self.assertEqual(to_json["page"], 1)
-        self.assertEqual(to_json["total_pages"], 1)
+        self.assertEqual(to_json["total results"], 1)
+        self.assertEqual(to_json["cur page"], 1)
+        self.assertEqual(to_json["total pages"], 1)
 
 
     def test_update_event(self):
@@ -181,17 +184,19 @@ class TestEvent(unittest.TestCase):
             	"title":"it",
             	"location":"derry",
             	"category":"horror",
+                'date_of_event':'22 March 2018',
             	"description":"Come see pennywise the clown in action"
                 }))
         self.assertEqual(resU.status_code, 201)
 
         resU = self.client().put(
-            '/api/v2/events/it',
+            '/api/v2/events/1',
             headers=head,
             data=json.dumps({
                 "title":"it",
             	"location":"derry",
             	"category":"horror",
+                'date_of_event':'22 March 2018',
                 "description": "Billy Denbrough beats the devil"
             }))
         self.assertEqual(resU.status_code, 200)
@@ -217,21 +222,22 @@ class TestEvent(unittest.TestCase):
                 "title":"it",
                 "location":"derry",
                 "category":"horror",
+                'date_of_event':'22 March 2018',
                 "description":"Come see pennywise the clown in action"
                 }))
         self.assertEqual(rv.status_code, 201)
 
-        res = self.client().delete('api/v2/events/it', headers=head)
+        res = self.client().delete('api/v2/events/1', headers=head)
         self.assertEqual(res.status_code, 200)
 
-        result = self.client().get('api/v2/events/it',headers=head)
+        result = self.client().get('api/v2/events/it/1/1',headers=head)
 
         self.assertEqual(result.status_code, 400)
         self.assertIn("event not found!", result.data)
 
     def test_search_for_event(self):
         """
-        Test that API endpoint '/api/events/<searchQuery>' retrieves the requested event
+        Test that API endpoint '/api/events/<searchQuery>/<int:results/<int:page_num>' retrieves the requested event
         """
 
         self.register_user()
@@ -246,14 +252,17 @@ class TestEvent(unittest.TestCase):
         res = self.client().post('api/v2/events', headers=head, data=json.dumps(self.event_data))
         self.assertEqual(res.status_code, 201)
 
-        res = self.client().get('/api/v2/events/daraja')
+        res = self.client().get('/api/v2/events/daraja/5/1')
 
         to_json =  json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(to_json["num_results"], 1)
-        self.assertEqual(to_json["page"], 1)
-        self.assertEqual(to_json["total_pages"], 1)
+        self.assertEqual(len(to_json["Search_Results"]), 1)
+        self.assertEqual(to_json["total results"], 1)
+        self.assertEqual(to_json["total pages"], 1)
+        self.assertEqual(to_json["cur page"], 1)
+        self.assertEqual(to_json["prev page"], None)
+        self.assertEqual(to_json["next page"], None)
 
 
     def test_filter_event_by_category(self):
@@ -276,6 +285,7 @@ class TestEvent(unittest.TestCase):
                 "title":"rasgueado",
                 "location":"nakuru",
                 "category":"music",
+                'date_of_event':'22 March 2018',
                 "description":"Come see the mariachi"
                 }))
         self.assertEqual(rv.status_code, 201)
@@ -287,6 +297,7 @@ class TestEvent(unittest.TestCase):
                 "title":"it",
                 "location":"derry",
                 "category":"horror",
+                'date_of_event':'22 March 2018',
                 "description":"Come see pennywise the clown in action"
                 }))
         self.assertEqual(rv.status_code, 201)
@@ -298,18 +309,21 @@ class TestEvent(unittest.TestCase):
                 "title":"flam",
                 "location":"nairobi",
                 "category":"music",
+                'date_of_event':'22 March 2018',
                 "description":"Come see the king of flam"
                 }))
         self.assertEqual(rv.status_code, 201)
 
-        result = self.client().get('/api/v2/events/category/music')
+        result = self.client().get('/api/v2/events/category/music/5/1')
         self.assertEqual(result.status_code, 200)
 
         to_json =  json.loads(result.data)
-        self.assertEqual(len(to_json["1filter_results"]), 2)
-        self.assertEqual(to_json["num_results"], 2)
-        self.assertEqual(to_json["page"], 1)
-        self.assertEqual(to_json["total_pages"], 1)
+        self.assertEqual(len(to_json["Filter_Results"]), 2)
+        self.assertEqual(to_json["total results"], 2)
+        self.assertEqual(to_json["total pages"], 1)
+        self.assertEqual(to_json["cur page"], 1)
+        self.assertEqual(to_json["prev page"], None)
+        self.assertEqual(to_json["next page"], None)
 
 
     def test_filter_event_by_location(self):
@@ -333,6 +347,7 @@ class TestEvent(unittest.TestCase):
                 "title":"rasgueado",
                 "location":"derry",
                 "category":"music",
+                'date_of_event':'22 March 2018',
                 "description":"Come see the mariachi"
                 }))
         self.assertEqual(rv.status_code, 201)
@@ -344,6 +359,7 @@ class TestEvent(unittest.TestCase):
                 "title":"it",
                 "location":"derry",
                 "category":"horror",
+                'date_of_event':'22 March 2018',
                 "description":"Come see pennywise the clown in action"
                 }))
         self.assertEqual(rv.status_code, 201)
@@ -355,21 +371,24 @@ class TestEvent(unittest.TestCase):
                 "title":"flam",
                 "location":"derry",
                 "category":"music",
+                'date_of_event':'22 March 2018',
                 "description":"Come see the king of flam"
                 }))
         self.assertEqual(rv.status_code, 201)
 
-        result = self.client().get('/api/v2/events/location/derry')
+        result = self.client().get('/api/v2/events/location/derry/5/1')
         self.assertEqual(result.status_code, 200)
 
         to_json =  json.loads(result.data)
 
-        self.assertEqual(len(to_json["1filter_results"]), 2)
-        self.assertEqual(to_json["num_results"], 3)
-        self.assertEqual(to_json["page"], 1)
-        self.assertEqual(to_json["total_pages"], 2)
+        self.assertEqual(len(to_json["Filter_Results"]), 3)
+        self.assertEqual(to_json["total results"], 3)
+        self.assertEqual(to_json["total pages"], 1)
+        self.assertEqual(to_json["cur page"], 1)
+        self.assertEqual(to_json["prev page"], None)
+        self.assertEqual(to_json["next page"], None)
 
-    def test_rsvp_event(self):
+    def test_rsvp_registered_user(self):
         """
         Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest
         """
@@ -392,11 +411,42 @@ class TestEvent(unittest.TestCase):
 
         res = self.client().post(
                 '/api/v2/event/daraja/rsvp',
-                headers=head
+                headers=head,
+                data=json.dumps({"email":"user@test.com"})
                 )
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome test, your reservation for the event daraja has been approved", res.data)
+        self.assertIn("Welcome user@test.com, your reservation for the event daraja has been approved", res.data)
 
+
+    def test_rsvp_unregistered_user(self):
+        """
+        Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest without registration
+        """
+
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(self.event_data)
+                )
+        self.assertEqual(res.status_code, 201)
+
+        res = self.client().post(
+                '/api/v2/event/daraja/rsvp',
+                headers=head,
+                data=json.dumps({"email":"unregisteredUser@test.com"})
+                )
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Welcome unregisteredUser@test.com, your reservation for the event daraja has been approved", res.data)
+        self.assertIn("Your temporary password is 12345, please login and change it to a much safer password", res.data)
 
     def test_retrieve_reserved_guests(self):
         """
@@ -421,7 +471,8 @@ class TestEvent(unittest.TestCase):
 
         res = self.client().post(
                 '/api/v2/event/daraja/rsvp',
-                headers=head
+                headers=head,
+                data=json.dumps({"email":"user@test.com"})
                 )
         self.assertEqual(res.status_code, 200)
 
@@ -434,8 +485,58 @@ class TestEvent(unittest.TestCase):
         self.assertIn("user@test.com", res.data)
         self.assertIn("test", res.data)
 
+    def test_error_handler_404(self):
+        """
+        Test how the Api handles a 404 error
+        """
 
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
 
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().post(
+                '/api/v2/groo',
+                headers=head,
+                data=json.dumps(self.event_data)
+                )
+
+        self.assertEqual(res.status_code, 404)
+        self.assertIn("endpoint not found", res.data)
+
+    def test_error_handler_405(self):
+        """
+        Test how the Api handles a 405 error
+        """
+
+        self.register_user()
+        result = self.login_user()
+        token = json.loads(result.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        res = self.client().delete(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(self.event_data)
+                )
+
+        self.assertEqual(res.status_code, 405)
+        self.assertIn("method not allowed for the requested url", res.data)
+
+    def test_error_handler_500(self):
+        """
+        Test how the Api handles a 500 error
+        """
+
+        return ""
 
     def test_render_api_as_root(self):
         """

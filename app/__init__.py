@@ -249,8 +249,6 @@ def create_app(config_name):
                             "total pages": total_pages,
                             "cur page": current_page,
                             "Events":output,
-                            # "next page":has_next_page,
-                            # "prev page":has_prev_page,
                             "prev page":prev_num,
                             "next page":next_num
 
@@ -298,7 +296,7 @@ def create_app(config_name):
         """
 
         update_data = request.get_json(force=True)
-        event = Event.query.filter_by(id=eventId).first()
+        event = Event.query.filter_by(event_id=eventId).first()
 
 
         if not event:
@@ -324,7 +322,7 @@ def create_app(config_name):
         Deletes an event
         """
 
-        event = Event.query.filter_by(id=eventId).first()
+        event = Event.query.filter_by(event_id=eventId).first()
 
         if event.created_by != current_user.email:
 
