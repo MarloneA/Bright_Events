@@ -278,10 +278,11 @@ def create_app(config_name):
             output.append(event.json())
 
         return jsonify({
+                            "Message":"Events created by "+current_user.name,
                             "total results": num_results,
                             "total pages": total_pages,
                             "cur page": current_page,
-                            "Events":output,
+                            "events":output,
                             "prev page":prev_num,
                             "next page":next_num
 
@@ -310,6 +311,7 @@ def create_app(config_name):
         event.category = update_data['category']
         event.location = update_data['location']
         event.description = update_data['description']
+        event.modified_on = datetime.datetime.utcnow()
         db.session.commit()
 
         return jsonify({'message' : 'The event has been updated!'}), 200
