@@ -201,6 +201,8 @@ class TestEvent(unittest.TestCase):
         resU = self.client().put('/api/v2/events/1', headers=head, data=data)
 
         self.assertEqual(resU.status_code, 200)
+        self.assertIn("The event has been updated!", resU.data)
+
 
     def test_delete_event(self):
         """
