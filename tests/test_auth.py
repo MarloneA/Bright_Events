@@ -41,23 +41,6 @@ class TestAuth(unittest.TestCase):
             db.create_all()
 
 
-    @staticmethod
-    def charVarying():
-        """
-        Static method that changes character varying(50) to character varying(200)
-        in the db to enable hashed passwords( method=sha256) to be stored
-        """
-
-        sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(200);'
-        conn = psycopg2.connect("dbname=test_bev user=marlone911")
-        cur = conn.cursor()
-        cur.execute(sqlstr)
-
-        conn.commit()
-
-        cur.close()
-        conn.close()
-
     def register_helper(self, par):
         """
         helper method for client registration
@@ -87,8 +70,6 @@ class TestAuth(unittest.TestCase):
         Test if a user can succesfully register an account
         """
 
-        self.charVarying()
-
         res = self.register_helper(self.user_data)
 
         self.assertEqual(res.status_code, 201)
@@ -98,8 +79,6 @@ class TestAuth(unittest.TestCase):
         """
         Test that a user cannot register with empty spaces
         """
-
-        self.charVarying()
 
         res = self.register_helper(self.empty_data)
 
@@ -111,8 +90,6 @@ class TestAuth(unittest.TestCase):
         Users should not register with names as integers
         """
 
-        self.charVarying()
-
         res = self.register_helper(self.int_data)
 
         self.assertEqual(res.status_code, 400)
@@ -122,8 +99,6 @@ class TestAuth(unittest.TestCase):
         """
         Test if an account is already registered
         """
-
-        self.charVarying()
 
         res = self.register_helper(self.user_data)
         res = self.register_helper(self.user_data)
@@ -135,8 +110,6 @@ class TestAuth(unittest.TestCase):
         """
         Test if a user can login
         """
-
-        self.charVarying()
 
         res = self.register_helper(self.user_data)
         res = self.login_helper(self.login_data)
@@ -150,8 +123,6 @@ class TestAuth(unittest.TestCase):
         """
         Test if a user has succesfully been logged out
         """
-
-        self.charVarying()
 
         res = self.register_helper(self.user_data)
         res = self.login_helper(self.login_data)
@@ -172,8 +143,6 @@ class TestAuth(unittest.TestCase):
         """
         Test if a User can reset their password
         """
-
-        self.charVarying()
 
         res = self.register_helper(self.user_data)
 

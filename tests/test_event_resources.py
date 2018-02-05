@@ -4,7 +4,6 @@ import json
 from app import create_app, db
 from app.models import User, Event
 from flask import jsonify
-from test_auth import TestAuth
 
 class TestEvent(unittest.TestCase):
     """
@@ -76,7 +75,6 @@ class TestEvent(unittest.TestCase):
         """
         This helper method helps register a test user.
         """
-        TestAuth.charVarying()
 
         user_data = {
             'name':name,
