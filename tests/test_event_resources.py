@@ -36,6 +36,36 @@ class TestEvent(unittest.TestCase):
             'date_of_event':'22 March 2018',
             'description':'a small intimate setting for singers, musicians and poetry collaborations'
         }
+        self.update_data = {
+            "title":"it",
+            "location":"derry",
+            "category":"horror",
+            'date_of_event':'22 March 2018',
+            "description": "Billy Denbrough beats the devil"
+        }
+        self.filter_data = [
+            {
+            "title":"rasgueado",
+            "location":"derry",
+            "category":"music",
+            'date_of_event':'22 March 2018',
+            "description":"Come see the mariachi"
+            },
+            {
+            "title":"it",
+            "location":"derry",
+            "category":"horror",
+            'date_of_event':'22 March 2018',
+            "description":"Come see pennywise the clown in action"
+            },
+            {
+            "title":"flam",
+            "location":"nairobi",
+            "category":"music",
+            'date_of_event':'22 March 2018',
+            "description":"Come see the king of flam"
+            }
+        ]
 
         # binds the app to the current context
         with self.app.app_context():
@@ -66,6 +96,34 @@ class TestEvent(unittest.TestCase):
         }
         return self.client().post('/api/v2/auth/login', data=json.dumps(user_data))
 
+    def set_headers(self, par):
+        """
+        helper method that sets request headers
+        """
+
+        token = json.loads(par.data.decode())['x-access-token']
+
+        head = {
+            "x-access-token":token,
+            "Content-Type":"application/json"
+            }
+
+        return head
+
+    def create_event_helper(self, head, dtparam):
+        """
+        helper method for creating evnts
+        """
+
+        res = self.client().post(
+                '/api/v2/events',
+                headers=head,
+                data=json.dumps(dtparam)
+                )
+
+        return res
+
+
     def test_create_event(self):
         """
         Test that API endpoint '/api/events' has created an event
@@ -73,20 +131,12 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(self.event_data)
-                )
+        head = self.set_headers(result)
+        res = self.create_event_helper(head, self.event_data)
 
         self.assertEqual(res.status_code, 201)
+        self.assertIn("new event has been created", res.data)
 
 
     def test_create_event_with_empty_title(self):
@@ -96,18 +146,9 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(self.empty_title)
-                )
+        head = self.set_headers(result)
+        res = self.create_event_helper(head, self.empty_title)
 
         self.assertEqual(res.status_code, 400)
         self.assertIn("Please provide a valid title", res.data)
@@ -119,18 +160,9 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(self.int_title)
-                )
+        head = self.set_headers(result)
+        res = self.create_event_helper(head, self.int_title)
 
         self.assertEqual(res.status_code, 400)
         self.assertIn("title cannot be an integer", res.data)
@@ -142,15 +174,9 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post('api/v2/events', headers=head, data=json.dumps(self.event_data))
-        self.assertEqual(res.status_code, 201)
+        head = self.set_headers(result)
+        res = self.create_event_helper(head, self.event_data)
 
         res = self.client().get('/api/v2/events/1/1', headers=head)
 
@@ -169,36 +195,13 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
+        head = self.set_headers(result)
+        self.create_event_helper(head, self.event_data)
 
+        data=json.dumps(self.update_data)
+        resU = self.client().put('/api/v2/events/1', headers=head, data=data)
 
-        resU = self.client().post(
-            '/api/v2/events',
-            headers=head,
-            data=json.dumps({
-            	"title":"it",
-            	"location":"derry",
-            	"category":"horror",
-                'date_of_event':'22 March 2018',
-            	"description":"Come see pennywise the clown in action"
-                }))
-        self.assertEqual(resU.status_code, 201)
-
-        resU = self.client().put(
-            '/api/v2/events/1',
-            headers=head,
-            data=json.dumps({
-                "title":"it",
-            	"location":"derry",
-            	"category":"horror",
-                'date_of_event':'22 March 2018',
-                "description": "Billy Denbrough beats the devil"
-            }))
         self.assertEqual(resU.status_code, 200)
 
     def test_delete_event(self):
@@ -208,24 +211,9 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"it",
-                "location":"derry",
-                "category":"horror",
-                'date_of_event':'22 March 2018',
-                "description":"Come see pennywise the clown in action"
-                }))
-        self.assertEqual(rv.status_code, 201)
+        head = self.set_headers(result)
+        self.create_event_helper(head, self.event_data)
 
         res = self.client().delete('api/v2/events/1', headers=head)
         self.assertEqual(res.status_code, 200)
@@ -242,18 +230,11 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post('api/v2/events', headers=head, data=json.dumps(self.event_data))
-        self.assertEqual(res.status_code, 201)
+        head = self.set_headers(result)
+        self.create_event_helper(head, self.event_data)
 
         res = self.client().get('/api/v2/events/daraja/5/1')
-
         to_json =  json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -271,53 +252,17 @@ class TestEvent(unittest.TestCase):
         """
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
+        head = self.set_headers(result)
 
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"rasgueado",
-                "location":"nakuru",
-                "category":"music",
-                'date_of_event':'22 March 2018',
-                "description":"Come see the mariachi"
-                }))
-        self.assertEqual(rv.status_code, 201)
-
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"it",
-                "location":"derry",
-                "category":"horror",
-                'date_of_event':'22 March 2018',
-                "description":"Come see pennywise the clown in action"
-                }))
-        self.assertEqual(rv.status_code, 201)
-
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"flam",
-                "location":"nairobi",
-                "category":"music",
-                'date_of_event':'22 March 2018',
-                "description":"Come see the king of flam"
-                }))
-        self.assertEqual(rv.status_code, 201)
+        self.create_event_helper(head, self.filter_data[0])
+        self.create_event_helper(head, self.filter_data[1])
+        self.create_event_helper(head, self.filter_data[2])
 
         result = self.client().get('/api/v2/events/category/music/5/1')
-        self.assertEqual(result.status_code, 200)
-
         to_json =  json.loads(result.data)
+
+        self.assertEqual(result.status_code, 200)
         self.assertEqual(len(to_json["Filter_Results"]), 2)
         self.assertEqual(to_json["total results"], 2)
         self.assertEqual(to_json["total pages"], 1)
@@ -333,56 +278,19 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
+        head = self.set_headers(result)
 
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"rasgueado",
-                "location":"derry",
-                "category":"music",
-                'date_of_event':'22 March 2018',
-                "description":"Come see the mariachi"
-                }))
-        self.assertEqual(rv.status_code, 201)
-
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"it",
-                "location":"derry",
-                "category":"horror",
-                'date_of_event':'22 March 2018',
-                "description":"Come see pennywise the clown in action"
-                }))
-        self.assertEqual(rv.status_code, 201)
-
-        rv = self.client().post(
-                'api/v2/events',
-                headers=head,
-                data=json.dumps({
-                "title":"flam",
-                "location":"derry",
-                "category":"music",
-                'date_of_event':'22 March 2018',
-                "description":"Come see the king of flam"
-                }))
-        self.assertEqual(rv.status_code, 201)
+        self.create_event_helper(head, self.filter_data[0])
+        self.create_event_helper(head, self.filter_data[1])
+        self.create_event_helper(head, self.filter_data[2])
 
         result = self.client().get('/api/v2/events/location/derry/5/1')
-        self.assertEqual(result.status_code, 200)
-
         to_json =  json.loads(result.data)
 
-        self.assertEqual(len(to_json["Filter_Results"]), 3)
-        self.assertEqual(to_json["total results"], 3)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(to_json["Filter_Results"]), 2)
+        self.assertEqual(to_json["total results"], 2)
         self.assertEqual(to_json["total pages"], 1)
         self.assertEqual(to_json["cur page"], 1)
         self.assertEqual(to_json["prev page"], None)
@@ -395,19 +303,10 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
+        head = self.set_headers(result)
 
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(self.event_data)
-                )
-        self.assertEqual(res.status_code, 201)
+        res = self.create_event_helper(head, self.event_data)
 
         res = self.client().post(
                 '/api/v2/event/daraja/rsvp',
@@ -424,20 +323,10 @@ class TestEvent(unittest.TestCase):
         """
 
         self.register_user()
+
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
-
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(self.event_data)
-                )
-        self.assertEqual(res.status_code, 201)
+        head = self.set_headers(result)
+        self.create_event_helper(head, self.event_data)
 
         res = self.client().post(
                 '/api/v2/event/daraja/rsvp',
@@ -454,20 +343,10 @@ class TestEvent(unittest.TestCase):
         """
 
         self.register_user()
+
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
-
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(self.event_data)
-                )
-        self.assertEqual(res.status_code, 201)
+        head = self.set_headers(result)
+        self.create_event_helper(head, self.event_data)
 
         res = self.client().post(
                 '/api/v2/event/daraja/rsvp',
@@ -492,12 +371,8 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
+        head = self.set_headers(result)
 
         res = self.client().post(
                 '/api/v2/groo',
@@ -515,12 +390,8 @@ class TestEvent(unittest.TestCase):
 
         self.register_user()
         result = self.login_user()
-        token = json.loads(result.data.decode())['x-access-token']
 
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
+        head = self.set_headers(result)
 
         res = self.client().delete(
                 '/api/v2/events',

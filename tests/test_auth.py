@@ -58,6 +58,28 @@ class TestAuth(unittest.TestCase):
         cur.close()
         conn.close()
 
+    def register_helper(self, par):
+        """
+        helper method for client registration
+        """
+
+        res = self.client().post(
+                '/api/v2/auth/register',
+                data=json.dumps(par)
+                )
+        return res
+
+    def login_helper(self, par):
+        """
+        Helper method for client login
+        """
+
+        res = self.client().post(
+                '/api/v2/auth/login',
+                data=json.dumps(par)
+                )
+
+        return res
 
 
     def test_register_user(self):
@@ -67,10 +89,7 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.user_data)
-                )
+        res = self.register_helper(self.user_data)
 
         self.assertEqual(res.status_code, 201)
         self.assertIn("registration succesfull", res.data)
@@ -82,10 +101,7 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.empty_data)
-                )
+        res = self.register_helper(self.empty_data)
 
         self.assertEqual(res.status_code, 400)
         self.assertIn("name/email/password fields cannot be empty", res.data)
@@ -97,10 +113,7 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.int_data)
-                )
+        res = self.register_helper(self.int_data)
 
         self.assertEqual(res.status_code, 400)
         self.assertIn("name cannot be an integer", res.data)
@@ -112,17 +125,8 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.user_data)
-                )
-
-        self.assertEqual(res.status_code, 201)
-
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.user_data)
-                )
+        res = self.register_helper(self.user_data)
+        res = self.register_helper(self.user_data)
 
         self.assertEqual(res.status_code, 400)
         self.assertIn("Email has already been registered", res.data)
@@ -134,16 +138,8 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.user_data)
-                )
-        self.assertEqual(res.status_code, 201)
-
-        res = self.client().post(
-                '/api/v2/auth/login',
-                data=json.dumps(self.login_data)
-                )
+        res = self.register_helper(self.user_data)
+        res = self.login_helper(self.login_data)
 
         self.assertEqual(res.status_code, 200)
         self.assertIn("Login succesfull", res.data)
@@ -157,17 +153,8 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.user_data)
-                )
-        self.assertEqual(res.status_code, 201)
-
-        res = self.client().post(
-                '/api/v2/auth/login',
-                data=json.dumps(self.login_data)
-                )
-        self.assertEqual(res.status_code, 200)
+        res = self.register_helper(self.user_data)
+        res = self.login_helper(self.login_data)
 
         to_json = json.loads(res.data)
 
@@ -188,11 +175,7 @@ class TestAuth(unittest.TestCase):
 
         self.charVarying()
 
-        res = self.client().post(
-                '/api/v2/auth/register',
-                data=json.dumps(self.user_data)
-                )
-        self.assertEqual(res.status_code, 201)
+        res = self.register_helper(self.user_data)
 
         new_credentials = {
             'email':self.user_data['email'],
