@@ -350,7 +350,7 @@ def create_app(config_name):
         #Check if the user has entered a valid email address
         if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
 
-    		return jsonify({"message":"Enter a valid email address"}), 400
+        return jsonify({"message":"Enter a valid email address"}), 400
 
         #Check if the user is registered
         usr = User.query.filter_by(email=data["email"]).first()
@@ -358,42 +358,42 @@ def create_app(config_name):
         #if the user is not registered, register the email and send a temp pass
         if not usr:
 
-            hashed_password = generate_password_hash("12345", method='sha256')
+        hashed_password = generate_password_hash("12345", method='sha256')
 
-            new_user = User(name=data['email'], email=data["email"], password=hashed_password)
+        new_user = User(name=data['email'], email=data["email"], password=hashed_password)
 
-            new_user.save()
+        new_user.save()
 
-            new_usr = User.query.filter_by(email=data["email"]).first()
+        new_usr = User.query.filter_by(email=data["email"]).first()
 
-            #Check for the event in question
-            event = Event.query.filter_by(title=eventId).first()
+        #Check for the event in question
+        event = Event.query.filter_by(title=eventId).first()
 
-            guests = event.user
+        guests = event.user
 
-            if new_usr in guests:
-                return jsonify({"message":"you have already reserved for "+event.title}), 403
-            else:
-                guests.append(new_usr)
-                db.session.commit()
+        if new_usr in guests:
+            return jsonify({"message":"you have already reserved for "+event.title}), 403
+        else:
+            guests.append(new_usr)
+            db.session.commit()
 
-            return jsonify({
-                                "message":'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved',
-                                "Important":"Your temporary password is 12345, please login and change it to a much safer password"
-                                }), 200
+        return jsonify({
+                            "message":'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved',
+                            "Important":"Your temporary password is 12345, please login and change it to a much safer password"
+                            }), 200
 
         else:
 
-            event = Event.query.filter_by(title=eventId).first()
+        event = Event.query.filter_by(title=eventId).first()
 
-            guests = event.user
-            if usr in guests:
-                return jsonify({"message":"you have already reserved for "+event.title}), 403
-            else:
-                guests.append(usr)
-                db.session.commit()
+        guests = event.user
+        if usr in guests:
+            return jsonify({"message":"you have already reserved for "+event.title}), 403
+        else:
+            guests.append(usr)
+            db.session.commit()
 
-            return jsonify({'message':'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved'}), 200
+        return jsonify({'message':'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved'}), 200
 
     #Retrieves Reservations
     @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
