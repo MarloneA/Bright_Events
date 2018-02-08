@@ -55,49 +55,49 @@ def create_app(config_name):
     #User registration
     @app.route('/api/v2/auth/register', methods=['POST'])
     def create_user():
-    	"""
-    	Creates a user account
-    	"""
+        """
+        Creates a user account
+        """
 
-    	data = request.get_json(force=True)
+        data = request.get_json(force=True)
 
-    	if "name" not in data or "email" not in data or "password" not in data:
-    		return jsonify({"message":"All fields are required"}), 400
+        if "name" not in data or "email" not in data or "password" not in data:
+        	return jsonify({"message":"All fields are required"}), 400
 
-    	hashed_password = generate_password_hash(data['password'], method='sha256')
+        hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    	user = User.query.filter_by(email=data["email"]).first()
+        user = User.query.filter_by(email=data["email"]).first()
 
-    	if user:
-    		return jsonify({"message":"Email has already been registered"}), 400
+        if user:
+        	return jsonify({"message":"Email has already been registered"}), 400
 
         if type(data["name"]) == int:
 
             return jsonify({"message":"name cannot be an integer"}), 400
 
-    	if data['name'] == "" or data['email'] == "" or data['password'] == "":
+        if data['name'] == "" or data['email'] == "" or data['password'] == "":
 
-    		return jsonify({"message":"Empty field detected please fill all fields"}), 400
+        	return jsonify({"message":"Empty field detected please fill all fields"}), 400
 
         if data['name'].split() == [] or data['email'].split() == [] or data['password'].split() == []:
 
-    		return jsonify({"message":"name/email/password fields cannot be empty"}), 400
+        	return jsonify({"message":"name/email/password fields cannot be empty"}), 400
 
-    	if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
 
-    		return jsonify({"message":"Enter a valid email address"}), 400
+        	return jsonify({"message":"Enter a valid email address"}), 400
 
-    	if len(data['password'].split()[0]) < 4:
+        if len(data['password'].split()[0]) < 4:
 
-    		return jsonify({"message":"password should be at least 4 characters"}), 400
+        	return jsonify({"message":"password should be at least 4 characters"}), 400
 
-    	else:
+        else:
 
-    		new_user = User(name=data['name'], email=data["email"], password=hashed_password)
+        	new_user = User(name=data['name'], email=data["email"], password=hashed_password)
 
-    		new_user.save()
+        	new_user.save()
 
-    		return jsonify({"message":"registration succesfull"}), 201
+        	return jsonify({"message":"registration succesfull"}), 201
 
 
     #User login
