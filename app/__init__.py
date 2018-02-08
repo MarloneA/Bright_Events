@@ -199,7 +199,7 @@ def create_app(config_name):
 
         if events['title'].split() == []:
 
-    		return jsonify({"message":"Please provide a valid title"}), 400
+        	return jsonify({"message":"Please provide a valid title"}), 400
 
 
         evnt = Event.query.filter_by(title=events["title"]).first()
