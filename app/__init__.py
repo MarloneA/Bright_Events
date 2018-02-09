@@ -311,7 +311,7 @@ def create_app(config_name):
         event.category = update_data['category']
         event.location = update_data['location']
         event.description = update_data['description']
-        event.modified_on = datetime.datetime.utcnow()
+        event.modified_on = datetime.datetime.now()
         db.session.commit()
 
         return jsonify({'message' : 'The event has been updated!'}), 200

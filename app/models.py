@@ -116,7 +116,7 @@ class Event(db.Model):
         self.category = category
         self.location = location
         self.description = description
-        self.created_on = datetime.datetime.utcnow()
+        self.created_on = datetime.datetime.now()
         self.modified_on = None
         self.created_by = created_by
         self.date_of_event = date_of_event
