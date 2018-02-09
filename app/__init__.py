@@ -204,7 +204,7 @@ def create_app(config_name):
         	return jsonify({"message":"Please provide a valid title"}), 400
 
 
-        evnt = Event.query.filter_by(title=events["title"]).first()
+        evnt = Event.query.filter_by(title=events["title"].lower()).first()
 
         if evnt:
         	return jsonify({"message":"An event with a similar title already exists"}), 400
