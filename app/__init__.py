@@ -59,6 +59,8 @@ def create_app(config_name):
         Creates a user account
         """
 
+        valid_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
+
         data = request.get_json(force=True)
 
         if "name" not in data or "email" not in data or "password" not in data:
@@ -83,7 +85,7 @@ def create_app(config_name):
 
         	return jsonify({"message":"name/email/password fields cannot be empty"}), 400
 
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
+        if not re.match(valid_email, data["email"]):
 
         	return jsonify({"message":"Enter a valid email address"}), 400
 
@@ -344,11 +346,13 @@ def create_app(config_name):
         Allows a user to RSVP for an event
         """
 
+        valid_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
+
         #Get request data from user
         data = request.get_json(force=True)
 
         #Check if the user has entered a valid email address
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", data["email"]):
+        if not re.match(valid_email, data["email"]):
 
         	return jsonify({"message":"Enter a valid email address"}), 400
 
