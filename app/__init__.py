@@ -382,8 +382,8 @@ def create_app(config_name):
                 db.session.commit()
 
             return jsonify({
-                                "message":'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved',
-                                "Important":"Your temporary password is 12345, please login and change it to a much safer password"
+                                "Message":'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved',
+                                "important":"Your temporary password is 12345, use it to login and set a safer password"
                                 }), 200
 
         else:
