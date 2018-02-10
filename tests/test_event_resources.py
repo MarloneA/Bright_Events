@@ -331,11 +331,11 @@ class TestEvent(unittest.TestCase):
         res = self.client().post(
                 '/api/v2/event/daraja/rsvp',
                 headers=head,
-                data=json.dumps({"email":"unregisteredUser@test.com"})
+                data=json.dumps({"email":"unregistered.user@test.com"})
                 )
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome unregisteredUser@test.com, your reservation for the event daraja has been approved", res.data)
-        self.assertIn("Your temporary password is 12345, please login and change it to a much safer password", res.data)
+        self.assertIn("Welcome unregistered.user@test.com, your reservation for the event daraja has been approved", res.data)
+        self.assertIn("Your temporary password is 12345, use it to login and set a safer password", res.data)
 
     def test_retrieve_reserved_guests(self):
         """

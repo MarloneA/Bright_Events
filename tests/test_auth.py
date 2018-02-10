@@ -16,11 +16,11 @@ class TestAuth(unittest.TestCase):
         self.client = self.app.test_client
         self.user_data = {
             'name':'Test Admin',
-            'email': 'admin@Admin.com',
+            'email': 'admin@admin.com',
             'password': 'admin'
         }
         self.login_data = {
-            'email': 'admin@Admin.com',
+            'email': 'admin@admin.com',
             'password': 'admin'
         }
         self.empty_data = {
@@ -30,7 +30,7 @@ class TestAuth(unittest.TestCase):
         }
         self.int_data = {
             'name':3,
-            'email': 'admin@Admin.com',
+            'email': 'admin@admin.com',
             'password': 'admin'
         }
 
