@@ -364,7 +364,7 @@ def create_app(config_name):
 
             hashed_password = generate_password_hash("12345", method='sha256')
 
-            new_user = User(name=data['email'], email=data["email"], password=hashed_password)
+            new_user = User(name=data['email'].split("@")[0], email=data["email"], password=hashed_password)
 
             new_user.save()
 
@@ -382,7 +382,7 @@ def create_app(config_name):
                 db.session.commit()
 
             return jsonify({
-                                "Message":'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved',
+                                "Message":'Welcome ' + data["email"].split("@")[0] +', your reservation for the event '+event.title+' has been approved',
                                 "important":"Your temporary password is 12345, use it to login and set a safer password"
                                 }), 200
 
