@@ -309,7 +309,7 @@ class TestEvent(unittest.TestCase):
         res = self.create_event_helper(head, self.event_data)
 
         res = self.client().post(
-                '/api/v2/event/daraja/rsvp',
+                '/api/v2/event/1/rsvp',
                 headers=head,
                 data=json.dumps({"email":"user@test.com"})
                 )
@@ -329,7 +329,7 @@ class TestEvent(unittest.TestCase):
         self.create_event_helper(head, self.event_data)
 
         res = self.client().post(
-                '/api/v2/event/daraja/rsvp',
+                '/api/v2/event/1/rsvp',
                 headers=head,
                 data=json.dumps({"email":"unregistered.user@test.com"})
                 )
@@ -349,14 +349,14 @@ class TestEvent(unittest.TestCase):
         self.create_event_helper(head, self.event_data)
 
         res = self.client().post(
-                '/api/v2/event/daraja/rsvp',
+                '/api/v2/event/1/rsvp',
                 headers=head,
                 data=json.dumps({"email":"user@test.com"})
                 )
         self.assertEqual(res.status_code, 200)
 
         res = self.client().get(
-                '/api/v2/event/daraja/rsvp',
+                '/api/v2/event/1/rsvp',
                 headers=head
                 )
         self.assertEqual(res.status_code, 200)
