@@ -25,4 +25,4 @@ script:
   - nosetests --with-coverage --cover-package=app
 
 after_script:
-  - coveralls
+  - coveralls --config_file .coveragerc

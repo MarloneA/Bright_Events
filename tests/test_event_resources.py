@@ -381,7 +381,7 @@ class TestEvent(unittest.TestCase):
                 )
 
         self.assertEqual(res.status_code, 404)
-        self.assertIn("endpoint not found", res.data)
+        self.assertIn("resource not found", res.data)
 
     def test_error_handler_405(self):
         """
@@ -400,7 +400,7 @@ class TestEvent(unittest.TestCase):
                 )
 
         self.assertEqual(res.status_code, 405)
-        self.assertIn("method not allowed for the requested url", res.data)
+        self.assertIn("method not allowed for the requested resource", res.data)
 
     def test_error_handler_500(self):
         """
