@@ -6,7 +6,6 @@ import jwt
 import datetime
 import re
 import os
-import psycopg2
 
 db = SQLAlchemy()
 
@@ -17,22 +16,6 @@ from .models import User, Event, BlackListToken
 
 
 from .config import app_config
-
-def charVarying():
-    """
-    Static method that changes character varying(50) to character varying(200)
-    in the db to enable hashed passwords( method=sha256) to be stored
-    """
-
-    sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(200);'
-    conn = psycopg2.connect("dbname=production user=marlone911")
-    cur = conn.cursor()
-    cur.execute(sqlstr)
-
-    conn.commit()
-
-    cur.close()
-    conn.close()
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
@@ -79,8 +62,6 @@ def create_app(config_name):
         valid_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
 
         data = request.get_json(force=True)
-
-        charVarying()
 
         if "name" not in data or "email" not in data or "password" not in data:
         	return jsonify({"message":"All fields are required"}), 400
