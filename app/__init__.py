@@ -25,7 +25,7 @@ def charVarying():
     """
 
     sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(200);'
-    conn = psycopg2.connect("dbname=test_bev user=marlone911")
+    conn = psycopg2.connect("dbname=deploy user=marlone911")
     cur = conn.cursor()
     cur.execute(sqlstr)
 
