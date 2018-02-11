@@ -334,7 +334,7 @@ class TestEvent(unittest.TestCase):
                 data=json.dumps({"email":"unregistered.user@test.com"})
                 )
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome unregistered.user@test.com, your reservation for the event daraja has been approved", res.data)
+        self.assertIn("Welcome unregistered.user, your reservation for the event daraja has been approved", res.data)
         self.assertIn("Your temporary password is 12345, use it to login and set a safer password", res.data)
 
     def test_retrieve_reserved_guests(self):

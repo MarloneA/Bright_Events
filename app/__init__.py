@@ -371,7 +371,7 @@ def create_app(config_name):
             new_usr = User.query.filter_by(email=data["email"]).first()
 
             #Check for the event in question
-            event = Event.query.filter_by(title=eventId).first()
+            event = Event.query.filter_by(event_id=eventId).first()
 
             guests = event.user
 
@@ -388,7 +388,7 @@ def create_app(config_name):
 
         else:
 
-            event = Event.query.filter_by(title=eventId).first()
+            event = Event.query.filter_by(event_id=eventId).first()
 
             guests = event.user
             if usr in guests:
@@ -407,7 +407,7 @@ def create_app(config_name):
         Retrieves a list of users who have event reservations
         """
 
-        event = Event.query.filter_by(title=eventId).first()
+        event = Event.query.filter_by(event_id=eventId).first()
 
         if not event:
             return jsonify({"message":"Please Enter a valid event title"}), 403
@@ -425,7 +425,7 @@ def create_app(config_name):
             attendees['email'] = guest.email
             output.append(attendees)
 
-        return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
+        return jsonify({'message':"Guests attending "+event.title, "guest_list":output}), 200
 
     #Search Event
     @app.route('/api/v2/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
