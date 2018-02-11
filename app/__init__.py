@@ -533,10 +533,10 @@ def create_app(config_name):
     @app.errorhandler(404)
     def route_not_found(e):
         """
-        Response message for missing or not found routes.
+        Response message for missing or not found resource endpoints.
         """
 
-        return jsonify({"message":"endpoint not found"}), 404
+        return jsonify({"message":"resource not found"}), 404
 
 
     @app.errorhandler(405)
@@ -545,7 +545,7 @@ def create_app(config_name):
         Response for methods not allowed for the requested URLs
         """
 
-        return jsonify({"message":"method not allowed for the requested url"}), 405
+        return jsonify({"message":"method not allowed for the requested resource"}), 405
 
 
     @app.errorhandler(500)
