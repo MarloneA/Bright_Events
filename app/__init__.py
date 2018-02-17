@@ -328,12 +328,12 @@ def create_app(config_name):
 
         event = Event.query.filter_by(event_id=eventId).first()
 
+        if not event:
+            return jsonify({'message' : 'The requested event was not found!'}), 400
+
         if event.created_by != current_user.email:
 
             return jsonify({'message':'You do not have enough permissions to delete this event'}), 401
-
-        if not event:
-            return jsonify({'message' : 'The requested event was not found!'}), 400
 
         event.delete()
 
@@ -373,6 +373,9 @@ def create_app(config_name):
             #Check for the event in question
             event = Event.query.filter_by(event_id=eventId).first()
 
+            if not event:
+                return jsonify({"message":"event could not be found"}), 404
+
             guests = event.user
 
             if new_usr in guests:
@@ -389,6 +392,9 @@ def create_app(config_name):
         else:
 
             event = Event.query.filter_by(event_id=eventId).first()
+
+            if not event:
+                return jsonify({"message":"event could not be found"}), 404
 
             guests = event.user
             if usr in guests:
@@ -466,7 +472,7 @@ def create_app(config_name):
     @app.route('/api/v2/events/category/<category>/<int:results>/<int:page_num>', methods=['GET'])
     def filter_all_categories(category, results, page_num):
 
-        event = Event.query.filter_by(category=category).paginate(page=page_num, per_page=results)
+        event = Event.query.filter_by(category=category.lower()).paginate(page=page_num, per_page=results)
 
         filter_results = event.items
         num_results = event.total
@@ -500,7 +506,7 @@ def create_app(config_name):
     @app.route('/api/v2/events/location/<location>/<int:results>/<int:page_num>', methods=['GET'])
     def filter_all_locations(location, results, page_num):
 
-        event = Event.query.filter_by(location=location).paginate(page=page_num, per_page=results)
+        event = Event.query.filter_by(location=location.lower()).paginate(page=page_num, per_page=results)
 
         filter_results = event.items
         num_results = event.total
