@@ -59,14 +59,21 @@ class TestEvent(BaseTestCase):
         result = self.login_user()
 
         head = self.set_headers(result)
-        res = self.create_event_helper(head, self.event_data)
 
-        res = self.client().get(version+'/events/1/1', headers=head)
+        self.create_event_helper(head, self.event_data)
+        self.event_data["title"]="daraj"
+        self.create_event_helper(head, self.event_data)
+        self.event_data["title"]="dara"
+        self.create_event_helper(head, self.event_data)
+        self.event_data["title"]="dar"
+        self.create_event_helper(head, self.event_data)
+
+        res = self.client().get(version+'/events/10/1', headers=head)
 
         to_json =  json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(to_json["total results"], 1)
+        self.assertEqual(to_json["total results"], 4)
         self.assertEqual(to_json["cur page"], 1)
         self.assertEqual(to_json["total pages"], 1)
 
