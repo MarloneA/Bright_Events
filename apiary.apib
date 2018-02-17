@@ -1,15 +1,15 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://andela-brightevents.herokuapp.com
 
 # Bright Events
 
-Bright Events is a platform where event organizers can create and manage different types of events. The platform also allows Users to to create accounts so that they can view, reserve edit and delete events they intend to attend
+Bright Events is an API that allows event organizers to create and manage different types of events. The platform also allows Users to to register accounts so that they can view, reserve edit and delete events they intend to attend
 
-## User Registration [/auth/register]
+## User Registration [/api/v2/auth/register]
 
 ### Register a user [POST]
 
-You can create a user by sending a json request with an email and password. The
+You can create a user by sending a json request with a name, email and password. The
 password must be four(4) characters and more.
 
 + Request (application/json)
@@ -23,34 +23,34 @@ password must be four(4) characters and more.
 + Response 201 (application/json)
 
         {
-
-            "message": "Successfully registered",
-            "status": "success"
+            "message": "registration succesfull"
         }
 
-+ Response 202 (application/json)
++ Response 400 (application/json)
 
         {
-            "message": "Missing or wrong email format or password",
-            "status": "failed"
+            "message":"All fields are required"
         }
 
-+ Response 202 (application/json)
++ Response 400 (application/json)
 
         {
-            "message": "Failed, User already exists, Please sign In",
-            "status": "failed"
+            "message":"Email has already been registered"
         }
 
-+ Response 202 (application/json)
++ Response 400 (application/json)
 
         {
-          "message": "Content-type must be json",
-          "status": "failed"
+            "message":"Empty field detected please fill all fields"
+        }
++ Response 400 (application/json)
+
+        {
+            "message":"Enter a valid email address"
         }
 
 
-## Login [/auth/login]
+## Login [/api/v2/auth/login]
 
 ### Login a user [POST]
 You can login a user by sending their email and password. Please take note
@@ -66,62 +66,96 @@ of the auth token for you will need it for all user requests.
 + Response 201 (application/json)
 
         {
-            "message": "Login Succesful",
-            "status": "success"
-        }
-
-+ Response 202 (application/json)
-
-        {
-          "message": "Content-type must be json",
-          "status": "failed"
+            "message":"Login succesfull",
+            "x-access-token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjMsImV4cCI6MTUxNjI5MDc5MX0.wTgVgRFTK83bFmdn6McFNk74D3r4gY91cuwYTAq05mc"
         }
 
 + Response 401 (application/json)
 
         {
-          "message": "Missing or wrong email format or password is less than four characters",
-          "status": "failed"
+            "message":"Invalid email/password"
         }
 
 + Response 401 (application/json)
 
         {
-          "message": "User does not exist or password is incorrect",
-          "status": "failed"
+            "message":"Incorrect password"
+        }
+
++ Response 401 (application/json)
+
+        {
+            "message":"Could not verify"
         }
 
 
-## Logout [/auth/logout]
+## Logout [/api/v2/auth/logout]
 
 ### Log out a user [POST]
 
-You can log out a user by sending a request with their email and address. The
-auth token will then be invalidated.
+You can log out a user by passing a token to the request header. The
+auth token will then be blacklisted.
 
 + Request (application/json)
 
-        + Cookies
+    + Headers
 
-            session['user']: user['email']
+        x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjMsImV4cCI6MTUxNjI5MDc5MX0.wTgVgRFTK83bFmdn6McFNk74D3r4gY91cuwYTAq05mc"
 
 + Response 200 (application/json)
 
         {
-            "message": "Successfully logged out",
-            "status": "success"
+            "message":"Successfully logged out"
         }
 
 + Response 401 (application/json)
 
         {
-          "message": "cookie has been deleted, Please login again",
-          "status": "failed"
+            "message":"failed Provide a valid auth token"
         }
 
-## Event Resources [/api/events]
+## Reset-Password [/api/v2/auth/reset-password]
 
-You can create, read, update and delete events.
+### Reset password [POST]
+
+You can change your password by sending passing your old credentials through the request
+
++ Request (application/json)
+
+        {
+            "email": "example@gmail.com",
+            "oldPassword": "123456",
+            "newPassword":"Quevado"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "message":"password has been updated succesfully"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message":"All fields are required"
+        }
+
++ Response 401 (application/json)
+
+        {
+            "message":"email address could not be found"
+        }
+
++ Response 401 (application/json)
+
+        {
+            "message":"old-password is invalid"
+        }
+
+
+## Event Resources [/api/v2/events]
+
+You can perfom C.R.U.D operations on the API
 
 NOTE: A valid token should be present in the header else a 401 or 403 response
 will be returned as seen in the log out section.
@@ -137,92 +171,95 @@ will be returned as seen in the log out section.
 
 + Request (application/json)
 
+    + Headers
+
+            x-access-token: JWT
+
     + Body
 
             {
-              "title": "Extravaganza",
-              "location":"nakuru",
-              "category":"dance",
-              "description":"The best event ever",
-              "date":"date of event"
+              "title": "It",
+              "location":"Deryy",
+              "category":"horror",
+              "description":"Come see Pennywise the clown"
             }
 
 + Response 201 (application/json)
 
         {
-            "createdAt": "Wed, 23 Aug 2017 10:14:52 GMT",
-            "id": 2,
-            "modifiedAt": "Wed, 23 Aug 2017 10:14:52 GMT",
-            "title": "Extravaganza",
-            "location":"nakuru",
-            "category":"dance",
-            "description":"The best event ever",
-            "date":"date of event"
-            "status": "success"
+          "message":"new event has been created"
         }
 
 + Response 400 (application/json)
 
         {
-          "message": "Please provide Title,location and category of event",
-          "status": "failed"
+          "message":"Empty field set detected"
         }
+
++ Response 400 (application/json)
+
+        {
+          "message":"An event with a similar title already exists"
+        }
+
+## Retrieve events [/api/v2/events]
 
 ### Retrieve all Events [GET]
 
-You can get a list of all the Events .
+You can get a list of all the Events the results are paginated total results and current page.
 
 + Request (application/json)
+
+    + Headers
+
+            x-access-token: JWT
 
 
 + Response 200 (application/json)
 
-<<<<<<< HEAD
-        { 
-            "id":"32", 
-            "title":"Rumba", 
-            "category":"dance", 
-            "location":"nairobi", 
-            "description":"A wonderful event extravaganza"
-        
-        }, 
-    
         {
-            "id":"64", 
-            "title":"Flamenco", 
-            "category":"mariachi", 
-            "location":"nakuru", 
-            "description":"The best experience so far"
-        
-        }
-        
-=======
-        {
-            "id":"32",
-            "title":"Rumba",
-            "category":"dance",
-            "location":"nairobi",
-            "description":"A wonderful event extravaganza"
-
-        },
-
-        {
-            "id":"64",
-            "title":"Flamenco",
-            "category":"mariachi",
-            "location":"nakuru",
-            "description":"The best experience so far"
-
+            "Events": [
+                {
+                    "category": "traditional",
+                    "description": "Come see Sonah jorbateh Live",
+                    "id": 1,
+                    "location": "nairobi",
+                    "title": "Jorbateh"
+                },
+                {
+                    "category": "fables",
+                    "description": "the sky is definitely falling",
+                    "id": 2,
+                    "location": "manhatan island",
+                    "title": "Chicken little"
+                }
+            ],
+            "num_results": 2,
+            "page": 1,
+            "total_pages": 1
         }
 
->>>>>>> development
-### Edit an Event [PUT]
+## Update [/api/v2/events/{eventTitle}]
 
-You can update the name of the Bucket
++ Parameters
 
-+ name (required, string) -  Name of the Bucket
+    + eventTitle (required,string) - Title of the event to be updated
+
+### Update an Event [PUT]
+
+You can update the details of an Event
+
++ title (required, string) -  Title of the Event
++ location (required, string) - Location of the Event
++ category (required, string) - Category of the Event
++ description  - A short description about the event of the Event
 
 + Request (application/json)
+
+    + Headers
+
+            x-access-token: JWT
+
 
     + Body
 
@@ -236,62 +273,209 @@ You can update the name of the Bucket
 + Response 201 (application/json)
 
         {
-            "createdAt": "Tue, 05 Sep 2017 17:55:33 GMT",
-            "id": 2,
-            "modifiedAt": "Tue, 05 Sep 2017 17:55:33 GMT",
-            "title": "Travel",
-            "category":"dance",
-            "location":"France",
-            "description":"The best event ever"
-            "status": "success"
+             "message" : "The event has been updated!"
         }
 
 + Response 400 (application/json)
 
         {
-          "message": "Please provide a valid Event Id",
-          "status": "failed"
+             "message" : "The requested event was not found!"
         }
 
-+ Response 400 (application/json)
+## Delete resource [/api/v2/events/{eventTitle}]
 
-        {
-          "message": "No attribute or value was specified, nothing was changed",
-          "status": "failed"
-        }
-
-+ Response 404 (application/json)
-
-        {
-          "message": "The Event with Id  does not exist",
-          "status": "failed"
-        }
++ Parameters
+    + eventTitle (required,string) - Title of the event to be deleted
 
 ### Delete an Event [DELETE]
 
 + Request (application/json)
 
+    + Headers
+
+            x-access-token: JWT
+
 + Response 200 (application/json)
 
         {
-            "message": "Successfully deleted the event Id 32",
-            "status": "success"
+          "message" : "The event has been deleted!"
         }
 
 + Response 400 (application/json)
 
         {
-          "message": "Please provide a valid Event Id",
-          "status": "failed"
+          "message" : "The requested event was not found!"
         }
 
-+ Response 404 (application/json)
+
+## RSVP resource [/api/v2/event/{eventId}/rsvp]
+
+### Reserve for an Event [POST]
+
+An User can reserve for an event by passing the correct title of the event in the param section
+
++ Parameters
+
++ eventId (required, string) - Title of the event to be deleted
+
+
++ Request (application/json)
+
+    + Headers
+
+            x-access-token: JWT
+
++ Response 200 (application/json)
 
         {
-          "message": "Event cannot be found",
-          "status": "failed"
+           "message":"Welcome John your reservation has been approved"
+        }
+
++ Response 403 (application/json)
+
+        {
+          "message": "you have already reserved for Jorbateh"
+        }
+
+## RSVP resource [/api/v2/event/{eventId}/rsvp]
+
++ Parameters
+    + eventId (required,number) - Title of the event to be deleted
+
+### Reserve for an Event [GET]
+
++ Request (application/json)
+
+    + Headers
+
+            x-access-token: JWT
+
++ Response 200 (application/json)
+
+        {
+          "guests": [
+              {
+                  "email": "john@gmail.com",
+                  "name": "John"
+              },
+              {
+                  "email": "eva@admin.com",
+                  "name": "Eva"
+              },
+              {
+                  "email": "lis@gmail.com",
+                  "name": "Lisa"
+              }
+          ],
+          "message": "Guests attending Jorbateh"
+        }
+
++ Response 403 (application/json)
+
+        {
+           "message":"Please Enter a valid event title"
+        }
+
+
+## Search events resources [/api/v2/events/<searchQuery>]
+
++ Parameters
+    + searchQuery (required,string) - a part of the string title being queried
+
+### Search for an event [GET]
+
+You can search through the Events, the results are paginated total results and current page.
+
++ Response 200 (application/json)
+
+        {
+            "search_results": [
+                {
+                    "category": "traditional",
+                    "description": "Come see Sonah jorbateh Live",
+                    "id": 1,
+                    "location": "nairobi",
+                    "title": "Jorbateh"
+                },
+                {
+                    "category": "fables",
+                    "description": "the sky is definitely falling",
+                    "id": 2,
+                    "location": "manhatan island",
+                    "title": "Joram"
+                }
+            ],
+            "num_results": 2,
+            "page": 1,
+            "total_pages": 1
+        }
+
+## Filter event resources [/api/v2/events/category/<category>]
+
++ Parameters
+    + category (required,string) - category of the event
+
+### Filter events [GET]
+
+You can filter events based on the category.
+
++ Response 200 (application/json)
+
+        {
+            "filter_results": [
+                {
+                    "category": "traditional",
+                    "description": "Come see Sonah jorbateh Live",
+                    "id": 1,
+                    "location": "nairobi",
+                    "title": "Jorbateh"
+                },
+                {
+                    "category": "traditional",
+                    "description": "the sky is definitely falling",
+                    "id": 2,
+                    "location": "manhatan island",
+                    "title": "Joram"
+                }
+            ],
+            "num_results": 2,
+            "page": 1,
+            "total_pages": 1
+        }
+
+## Filter event resources [/api/v2/events/location/<category>]
+
++ Parameters
+    + location (required,string) - location of the event
+
+### Filter events [GET]
+
+You can filter events based on their location.
+
++ Response 200 (application/json)
+
+        {
+            "filter_results": [
+                {
+                    "category": "traditional",
+                    "description": "Come see Sonah jorbateh Live",
+                    "id": 1,
+                    "location": "nairobi",
+                    "title": "Jorbateh"
+                },
+                {
+                    "category": "traditional",
+                    "description": "the sky is definitely falling",
+                    "id": 2,
+                    "location": "nairobi",
+                    "title": "Joram"
+                }
+            ],
+            "num_results": 2,
+            "page": 1,
+            "total_pages": 1
+        }
 <<<<<<< HEAD
-        }
-=======
-        }
 >>>>>>> development
+=======
+>>>>>>> CI-badges

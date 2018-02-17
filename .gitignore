@@ -1,9 +1,15 @@
 /instance
 /venv
 /.vscode
+/tmp
 
 .vscode
 .coverage
 *.DS_Store
 *.pyc
 .env
+.idea
+
+sample.apib
+clipboard.py
+errors.py

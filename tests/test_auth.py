@@ -1,103 +1,156 @@
-"""Flask API tests"""
-import unittest
-from data import users, events, logged_users
+import json
+from tests.base import BaseTestCase
+from app import version
 
-class TestAuth(unittest.TestCase):
-    """Runs tests on API endpoints"""
+class TestAuth(BaseTestCase):
+    """
+    This Class covers Authentication related tests
+    """
 
-    def test_create_user(self):
+    def test_register_user(self):
         """
-        Test that API endpoint ''/api/auth/register' creates a new user account
-        """
-
-        user = {"id":"33","name":"Picado", "email":"picado@gmail.com","password":"456"}
-        users.append(user)
-        self.assertEqual(len(users), 3)
-
-    def test_login_user(self):
-        """
-        Test that API endpoint '/api/auth/login' adds login details
+        Test if a user can succesfully register an account
         """
 
-        log = {'email':"lanister@gmail.com"}
-        logged_users.append(log)
-        self.assertEqual(len(logged_users), 4)
+        res = self.register_helper(self.user_data)
+
+        self.assertEqual(res.status_code, 201)
+        self.assertIn("registration succesfull", res.data)
+
+    def test_register_user_with_spaces(self):
+        """
+        Test that a user cannot register with empty spaces
+        """
+
+        res = self.register_helper(self.empty_data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("name/email/password fields cannot be empty", res.data)
+
+    def test_register_with_name_as_integer(self):
+        """
+        Users should not register with names as integers
+        """
+
+        res = self.register_helper(self.int_data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("name cannot be an integer", res.data)
+
+    def test_password_should_not_be_less_than_four_characters(self):
+        """
+        Test that a password should contain atleast four characters
+        """
+
+        self.user_data["password"]="123"
+        res = self.register_helper(self.user_data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("password should be at least 4 characters", res.data)
+
+    def test_if_account_is_already_registered(self):
+        """
+        Test if an account is already registered
+        """
+
+        self.register_helper(self.user_data)
+        res = self.register_helper(self.user_data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("Email has already been registered", res.data)
+
+    def test_login(self):
+        """
+        Test if a user can login
+        """
+
+        self.register_helper(self.user_data)
+        res = self.login_helper(self.login_data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Login succesfull", res.data)
+        self.assertIn("x-access-token", res.data)
+
+    def test_login_with_wrong_email(self):
+        """
+        Test response for invalid email
+        """
+
+        self.register_helper(self.user_data)
+        self.login_data["email"]="adm@admin.com"
+        res = self.login_helper(self.login_data)
+
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Could not verify", res.data)
+
+    def test_login_with_wrong_password(self):
+        """
+        Test response for wrong password
+        """
+
+        self.register_helper(self.user_data)
+        self.login_data["password"]="kdfj"
+        res = self.login_helper(self.login_data)
+
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Incorrect password", res.data)
+
+
+    def test_login_request_has_a_json_object(self):
+        """
+        Test that the request syntax is a json object
+        """
+
+        self.register_helper(self.user_data)
+        self.login_data=None
+        res = self.login_helper(self.login_data)
+
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Invalid email/password", res.data)
+
+    def test_invalid_token_in_respnse_header(self):
+        """
+        Test if a token passed in the response header is invalid
+        """
+
+        self.register_user()
+        result = self.login_user()
+
+        head = self.set_headers(result)
+        head["x-access-token"]="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjQsImV4cCI6MTUxODQyMDg4MX0.O3Zl80XmAIbaSQdf8RbP44TEyA4FxbkyniH2dwOdB44"
+        res = self.create_event_helper(head, self.event_data)
+
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Token is invalid!", res.data)
+
 
     def test_logout_user(self):
         """
-        Test that API endpoint '/api/auth/logout' logs out os a session
+        Test if a user has succesfully been logged out
         """
 
-        log = {'email':"lanister@gmail.com"}
-        logged_users.remove(log)
-        self.assertEqual(len(logged_users), 3)
+        self.register_helper(self.user_data)
+        res = self.login_helper(self.login_data)
+
+        to_json = json.loads(res.data)
+        res = self.logout_helper(to_json)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Successfully logged out",res.data)
+
 
 
     def test_reset_password(self):
         """
-        Test that API endpoint '/api/auth/reset-password' resets a password
+        Test if a User can reset their password
         """
 
-        password_reset = {'email':'picado@gmail.com','password':'mynewpass'}
+        self.register_helper(self.user_data)
+        res = self.reset_password_helper()
 
-        user = [usr for usr in users if usr["email"] == password_reset["email"]]
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("password has been updated succesfully", res.data)
 
-        user[0]['password'] = password_reset['password']
-
-        self.assertEqual(user[0]['password'], 'mynewpass')
-
-
-    def test_create_event(self):
-        """
-        Test that API endpoint '/api/events' has created an event
-        """
-        event = {"id":"67", "title":"grunge", "category":"music", "location":"nairobi", "description":"A wonderful event extravaganza"}
-        events.append(event)
-        self.assertEqual(len(events), 3)
-
-    def test_update_event(self):
-        """
-        Test that API endpoint '/api/events/<eventId>' has made an update request
-        """
-        event_update = {"id":"32", "title":"newtitle", "category":"poems", "location":"rwanda", "description":"the best event ever"}
-
-        event = [evnt for evnt in events if evnt["id"] == "32"]
-
-        event[0]["title"] = event_update["title"]
-        event[0]["location"] = event_update["location"]
-        event[0]["category"] = event_update["category"]
-        event[0]["description"] = event_update["description"]
-
-
-        self.assertEqual(event[0]["title"], "newtitle")
-        self.assertEqual(event[0]["location"], "rwanda")
-        self.assertEqual(event[0]["category"], "poems")
-        self.assertEqual(event[0]["description"], "the best event ever")
-
-    def test_delete_event(self):
-        """
-        Test that API endpoint '/api/events/<eventId>' has deleted an event
-        """
-
-        event = [event for event in events if event["id"] == "64"]
-        events.remove(event[0])
-        self.assertEqual(len(events), 2)
-
-    def test_retrieve_event(self):
-        """
-        Test that API endpoint '/api/events' retrieves all events
-        """
-        self.assertEqual(len(events), 2)
-
-    def test_rsvp_event(self):
-        """
-        Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest
-        """
-        check_usr = [usr for usr in users if usr['name'] == 'Pres']
-
-        check_usr[0]['rsvp'] = True
-
-        self.assertEqual(check_usr[0]['rsvp'], True)
 
 if __name__ == "__main__":
     unittest.main()

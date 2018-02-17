@@ -1,8 +1,12 @@
+import os
+
 class Config(object):
 
     """
     Common configurations
     """
+
+    DEBUG = False
 
 class Development(Config):
     """
@@ -11,6 +15,8 @@ class Development(Config):
 
     DEBUG = True
     SQLALCHEMY_ECHO = True
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
 class Testing(Config):
     """
@@ -19,6 +25,7 @@ class Testing(Config):
 
     DEBUG = True
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'postgresql://marlone911:@localhost/test_bev'
 
 class Production(Config):
     """
@@ -26,6 +33,7 @@ class Production(Config):
     """
 
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
 
 app_config = {

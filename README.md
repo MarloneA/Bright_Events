@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/MarloneA/Bright_Events.svg?branch=master)](https://travis-ci.org/MarloneA/Bright_Events)
-[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f8572925dee64704866b98659cc74462)](https://www.codacy.com/app/MarloneA/Bright_Events?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MarloneA/Bright_Events&amp;utm_campaign=Badge_Grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7eaf42e007c32c817885/maintainability)](https://codeclimate.com/github/MarloneA/Bright_Events/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/7eaf42e007c32c817885/test_coverage)](https://codeclimate.com/github/MarloneA/Bright_Events/test_coverage)
 
 # Bright_Events
 
@@ -54,7 +55,7 @@ The Live API is hosted [here](https://andela-brightevents.herokuapp.com/) on [he
 
 # Contribute
 
-To contribute to the project, create a Pull Request on a feature branch from develop. 
+To contribute to the project, create a Pull Request on a feature branch from develop.
 
 # License
 
