@@ -1,126 +1,11 @@
-import unittest
-import os
 import json
-from app import create_app, db
-from app.models import User, Event
-from flask import jsonify
+from tests.base import BaseTestCase
+from app import version
 
-class TestEvent(unittest.TestCase):
+class TestEvent(BaseTestCase):
     """
     This Class covers tests centered around CRUD operations of the API
     """
-
-    def setUp(self):
-        """Define test variables and initialize app."""
-        self.app = create_app(config_name="testing")
-        self.client = self.app.test_client
-        self.event_data = {
-            'title':'daraja',
-            'category': 'showcase',
-            'location': 'nairobi',
-            'date_of_event':'22 March 2018',
-            'description':'a small intimate setting for singers, musicians and poetry collaborations'
-        }
-        self.empty_title = {
-            'title':'  ',
-            'category': 'showcase',
-            'location': 'nairobi',
-            'date_of_event':'22 March 2018',
-            'description':'a small intimate setting for singers, musicians and poetry collaborations'
-        }
-        self.int_title = {
-            'title':45,
-            'category': 'showcase',
-            'location': 'nairobi',
-            'date_of_event':'22 March 2018',
-            'description':'a small intimate setting for singers, musicians and poetry collaborations'
-        }
-        self.update_data = {
-            "title":"it",
-            "location":"derry",
-            "category":"horror",
-            'date_of_event':'22 March 2018',
-            "description": "Billy Denbrough beats the devil"
-        }
-        self.filter_data = [
-            {
-            "title":"rasgueado",
-            "location":"derry",
-            "category":"music",
-            'date_of_event':'22 March 2018',
-            "description":"Come see the mariachi"
-            },
-            {
-            "title":"it",
-            "location":"derry",
-            "category":"horror",
-            'date_of_event':'22 March 2018',
-            "description":"Come see pennywise the clown in action"
-            },
-            {
-            "title":"flam",
-            "location":"nairobi",
-            "category":"music",
-            'date_of_event':'22 March 2018',
-            "description":"Come see the king of flam"
-            }
-        ]
-
-        # binds the app to the current context
-        with self.app.app_context():
-            # create all tables
-            db.create_all()
-
-    def register_user(self, name="test", email="user@test.com", password="test1234"):
-        """
-        This helper method helps register a test user.
-        """
-
-        user_data = {
-            'name':name,
-            'email': email,
-            'password': password
-        }
-        return self.client().post('/api/v2/auth/register', data=json.dumps(user_data))
-
-
-    def login_user(self, email="user@test.com", password="test1234"):
-        """
-        This helper method helps log in a test user.
-        """
-        user_data = {
-            'email': email,
-            'password': password
-        }
-        return self.client().post('/api/v2/auth/login', data=json.dumps(user_data))
-
-    def set_headers(self, par):
-        """
-        helper method that sets request headers
-        """
-
-        token = json.loads(par.data.decode())['x-access-token']
-
-        head = {
-            "x-access-token":token,
-            "Content-Type":"application/json"
-            }
-
-        return head
-
-    def create_event_helper(self, head, dtparam):
-        """
-        helper method for creating evnts
-        """
-
-        res = self.client().post(
-                '/api/v2/events',
-                headers=head,
-                data=json.dumps(dtparam)
-                )
-
-        return res
-
 
     def test_create_event(self):
         """
@@ -167,7 +52,7 @@ class TestEvent(unittest.TestCase):
 
     def test_retrieve_events(self):
         """
-        Test that APi endpoint retrieves all events
+        Test that APi endpoint retrieves all events recorded in the db
         """
 
         self.register_user()
@@ -176,7 +61,7 @@ class TestEvent(unittest.TestCase):
         head = self.set_headers(result)
         res = self.create_event_helper(head, self.event_data)
 
-        res = self.client().get('/api/v2/events/1/1', headers=head)
+        res = self.client().get(version+'/events/1/1', headers=head)
 
         to_json =  json.loads(res.data)
 
@@ -198,7 +83,7 @@ class TestEvent(unittest.TestCase):
         self.create_event_helper(head, self.event_data)
 
         data=json.dumps(self.update_data)
-        resU = self.client().put('/api/v2/events/1', headers=head, data=data)
+        resU = self.client().put(version+'/events/1', headers=head, data=data)
 
         self.assertEqual(resU.status_code, 200)
         self.assertIn("The event has been updated!", resU.data)
@@ -234,7 +119,7 @@ class TestEvent(unittest.TestCase):
         head = self.set_headers(result)
         self.create_event_helper(head, self.event_data)
 
-        res = self.client().get('/api/v2/events/daraja/5/1')
+        res = self.client().get(version+'/events/daraja/5/1')
         to_json =  json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -248,7 +133,7 @@ class TestEvent(unittest.TestCase):
 
     def test_filter_event_by_category(self):
         """
-        Test that API endpoint '/api/v2/events/category/<category>' filters events by a category
+        Test that API endpoint version+'/events/category/<category>' filters events by a category
         """
         self.register_user()
         result = self.login_user()
@@ -259,7 +144,7 @@ class TestEvent(unittest.TestCase):
         self.create_event_helper(head, self.filter_data[1])
         self.create_event_helper(head, self.filter_data[2])
 
-        result = self.client().get('/api/v2/events/category/music/5/1')
+        result = self.client().get(version+'/events/category/music/5/1')
         to_json =  json.loads(result.data)
 
         self.assertEqual(result.status_code, 200)
@@ -273,7 +158,7 @@ class TestEvent(unittest.TestCase):
 
     def test_filter_event_by_location(self):
         """
-        Test that API endpoint '/api/v2/events/location/<location>' filters events by location
+        Test that API endpoint version+'/events/location/<location>' filters events by location
         """
 
         self.register_user()
@@ -285,7 +170,7 @@ class TestEvent(unittest.TestCase):
         self.create_event_helper(head, self.filter_data[1])
         self.create_event_helper(head, self.filter_data[2])
 
-        result = self.client().get('/api/v2/events/location/derry/5/1')
+        result = self.client().get(version+'/events/location/derry/5/1')
         to_json =  json.loads(result.data)
 
         self.assertEqual(result.status_code, 200)
@@ -305,14 +190,10 @@ class TestEvent(unittest.TestCase):
         result = self.login_user()
 
         head = self.set_headers(result)
+        self.create_event_helper(head, self.event_data)
 
-        res = self.create_event_helper(head, self.event_data)
+        res = self.reserve_event_helper(head, "user@test.com")
 
-        res = self.client().post(
-                '/api/v2/event/1/rsvp',
-                headers=head,
-                data=json.dumps({"email":"user@test.com"})
-                )
         self.assertEqual(res.status_code, 200)
         self.assertIn("Welcome user@test.com, your reservation for the event daraja has been approved", res.data)
 
@@ -328,11 +209,8 @@ class TestEvent(unittest.TestCase):
         head = self.set_headers(result)
         self.create_event_helper(head, self.event_data)
 
-        res = self.client().post(
-                '/api/v2/event/1/rsvp',
-                headers=head,
-                data=json.dumps({"email":"unregistered.user@test.com"})
-                )
+        res = self.reserve_event_helper(head, "unregistered.user@test.com")
+
         self.assertEqual(res.status_code, 200)
         self.assertIn("Welcome unregistered.user, your reservation for the event daraja has been approved", res.data)
         self.assertIn("Your temporary password is 12345, use it to login and set a safer password", res.data)
@@ -343,20 +221,15 @@ class TestEvent(unittest.TestCase):
         """
 
         self.register_user()
-
         result = self.login_user()
         head = self.set_headers(result)
-        self.create_event_helper(head, self.event_data)
 
-        res = self.client().post(
-                '/api/v2/event/1/rsvp',
-                headers=head,
-                data=json.dumps({"email":"user@test.com"})
-                )
-        self.assertEqual(res.status_code, 200)
+        self.create_event_helper(head, self.event_data)
+        self.reserve_event_helper(head, "user@test.com")
+
 
         res = self.client().get(
-                '/api/v2/event/1/rsvp',
+                version+'/event/1/rsvp',
                 headers=head
                 )
         self.assertEqual(res.status_code, 200)
@@ -375,7 +248,7 @@ class TestEvent(unittest.TestCase):
         head = self.set_headers(result)
 
         res = self.client().post(
-                '/api/v2/groo',
+                version+'/groo',
                 headers=head,
                 data=json.dumps(self.event_data)
                 )
@@ -394,7 +267,7 @@ class TestEvent(unittest.TestCase):
         head = self.set_headers(result)
 
         res = self.client().delete(
-                '/api/v2/events',
+                version+'/events',
                 headers=head,
                 data=json.dumps(self.event_data)
                 )
@@ -418,14 +291,6 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.content_type, 'text/html; charset=utf-8')
 
-
-
-    def tearDown(self):
-        """teardown all initialized variables."""
-        with self.app.app_context():
-            # drop all tables
-            db.session.remove()
-            db.drop_all()
 
 if __name__ == "__main__":
     unittest.main()

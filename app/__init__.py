@@ -13,9 +13,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from .models import User, Event, BlackListToken
 
-
-
 from .config import app_config
+
+version = os.getenv('URL_PREFIX')
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
@@ -53,7 +53,7 @@ def create_app(config_name):
         return render_template('api.html')
 
     #User registration
-    @app.route('/api/v2/auth/register', methods=['POST'])
+    @app.route(version+'/auth/register', methods=['POST'])
     def create_user():
         """
         Creates a user account
@@ -103,7 +103,7 @@ def create_app(config_name):
 
 
     #User login
-    @app.route('/api/v2/auth/login', methods=['POST'])
+    @app.route(version+'/auth/login', methods=['POST'])
     def login():
     	auth = request.get_json(force=True)
 
@@ -132,7 +132,7 @@ def create_app(config_name):
     	return jsonify({"message":"Incorrect password"}), 401
 
     #User logout
-    @app.route('/api/v2/auth/logout', methods=["POST"])
+    @app.route(version+'/auth/logout', methods=["POST"])
     @token_required
     def logout(current_user):
         """
@@ -155,7 +155,7 @@ def create_app(config_name):
         return 'failed Provide an authorization header', 403
 
     #Password Reset
-    @app.route('/api/v2/auth/reset-password', methods=["POST"])
+    @app.route(version+'/auth/reset-password', methods=["POST"])
     def reset_password():
         """
         Resets password
@@ -183,7 +183,7 @@ def create_app(config_name):
 
 
     #Create Event
-    @app.route('/api/v2/events', methods=['POST'])
+    @app.route(version+'/events', methods=['POST'])
     @token_required
     def create_event(current_user):
         """
@@ -225,7 +225,7 @@ def create_app(config_name):
         return response
 
     #Retrieve all Events
-    @app.route('/api/v2/events/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route(version+'/events/<int:results>/<int:page_num>', methods=['GET'])
     def retrieve_events(results, page_num):
         """
         Retrieves events
@@ -257,7 +257,7 @@ def create_app(config_name):
                             }), 200
 
     #Retrieve my Events
-    @app.route('/api/v2/events/myevents/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route(version+'/events/myevents/<int:results>/<int:page_num>', methods=['GET'])
     @token_required
     def retrieve_my_events(current_user, results, page_num):
         """
@@ -291,7 +291,7 @@ def create_app(config_name):
                             }), 200
 
     #Update Event
-    @app.route('/api/v2/events/<eventId>', methods=['PUT'])
+    @app.route(version+'/events/<eventId>', methods=['PUT'])
     @token_required
     def update_event(current_user, eventId):
         """
@@ -319,7 +319,7 @@ def create_app(config_name):
         return jsonify({'message' : 'The event has been updated!'}), 200
 
     #Delete Event
-    @app.route('/api/v2/events/<eventId>', methods=['DELETE'])
+    @app.route(version+'/events/<eventId>', methods=['DELETE'])
     @token_required
     def delete_event(current_user, eventId):
         """
@@ -340,7 +340,7 @@ def create_app(config_name):
         return jsonify({'message' : 'The event has been deleted!'}), 200
 
     #Create Reservation
-    @app.route('/api/v2/event/<eventId>/rsvp', methods=['POST'])
+    @app.route(version+'/event/<eventId>/rsvp', methods=['POST'])
     def rsvp_event(eventId):
         """
         Allows a user to RSVP for an event
@@ -406,7 +406,7 @@ def create_app(config_name):
             return jsonify({'message':'Welcome ' + data["email"] +', your reservation for the event '+event.title+' has been approved'}), 200
 
     #Retrieves Reservations
-    @app.route('/api/v2/event/<eventId>/rsvp', methods=['GET'])
+    @app.route(version+'/event/<eventId>/rsvp', methods=['GET'])
     @token_required
     def rsvp_guests(current_user, eventId):
         """
@@ -434,7 +434,7 @@ def create_app(config_name):
         return jsonify({'message':"Guests attending "+event.title, "guest_list":output}), 200
 
     #Search Event
-    @app.route('/api/v2/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route(version+'/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
     def get_one_event(q, results, page_num):
 
         results = Event.query.filter(Event.title.like('%'+ q.lower() +'%')).paginate(page=page_num, per_page=results)
@@ -469,7 +469,7 @@ def create_app(config_name):
                                 }), 200
 
     #Filter Events by Category
-    @app.route('/api/v2/events/category/<category>/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route(version+'/events/category/<category>/<int:results>/<int:page_num>', methods=['GET'])
     def filter_all_categories(category, results, page_num):
 
         event = Event.query.filter_by(category=category.lower()).paginate(page=page_num, per_page=results)
@@ -503,7 +503,7 @@ def create_app(config_name):
                             }), 200
 
     #Filter Events by Location
-    @app.route('/api/v2/events/location/<location>/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route(version+'/events/location/<location>/<int:results>/<int:page_num>', methods=['GET'])
     def filter_all_locations(location, results, page_num):
 
         event = Event.query.filter_by(location=location.lower()).paginate(page=page_num, per_page=results)
@@ -535,6 +535,14 @@ def create_app(config_name):
                             "Filter_Results":locations
 
                             }), 200
+
+    @app.errorhandler(400)
+    def bad_request_type(e):
+        """
+        Response message for a request sent with the wrong syntax
+        """
+
+        return jsonify({"message":"request sent with invalid syntax"}), 400
 
     @app.errorhandler(404)
     def route_not_found(e):
