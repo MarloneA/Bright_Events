@@ -3,6 +3,10 @@ language: python
 python:
   - "2.7"
 
+env:
+  global:
+    - CC_TEST_REPORTER_ID=cabff919b8351445c52a976a48d2b1f10f6e8d9f554abcf968b35fce3e650328
+
 services:
   - postgresql
 
@@ -14,11 +18,13 @@ before_install:
 
 install:
   - pip install -r requirements.txt
-  - pip install coveralls
+  - pip install coverage
 
 before_script:
   - sudo -u postgres createuser marlone911
   - psql -c 'create database test_bev;' -U postgres
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
 
 
 script:
@@ -26,4 +32,4 @@ script:
   - nosetests --with-coverage --cover-package=app
 
 after_script:
-  - coveralls
+  - coverage xml
