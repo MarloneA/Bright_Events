@@ -47,6 +47,18 @@ def create_app(config_name):
 
         return decorated
 
+
+    def samaki():
+        sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(200);'
+        conn = psycopg2.connect("dbname=dc21j6bllqh1tk user=lfhqnyywnzjfqs")
+        cur = conn.cursor()
+        cur.execute(sqlstr)
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
     #Render documentation as root of the api
     @app.route('/')
     def index():
@@ -59,6 +71,8 @@ def create_app(config_name):
         Creates a user account
         """
 
+        samaki()
+
         valid_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
 
         data = request.get_json(force=True)
@@ -69,6 +83,8 @@ def create_app(config_name):
         hashed_password = generate_password_hash(data['password'])
 
         user = User.query.filter_by(email=data["email"]).first()
+
+
 
         if user:
         	return jsonify({"message":"Email has already been registered"}), 400
