@@ -225,7 +225,7 @@ def create_app(config_name):
         return response
 
     #Retrieve all Events
-    @app.route('/'+version+'/events/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route('/api/v2/events/<int:results>/<int:page_num>', methods=['GET'])
     def retrieve_events(results, page_num):
         """
         Retrieves events
