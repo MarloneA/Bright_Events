@@ -7,6 +7,8 @@ import datetime
 import re
 import os
 
+import psycopg2
+
 db = SQLAlchemy()
 
 from werkzeug.security import generate_password_hash, check_password_hash
