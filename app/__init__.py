@@ -15,7 +15,7 @@ from .models import User, Event, BlackListToken
 
 from .config import app_config
 
-version = os.environ['URL_PREFIX']
+version = os.getenv('URL_PREFIX')
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
