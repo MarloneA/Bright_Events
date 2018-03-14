@@ -66,7 +66,7 @@ def create_app(config_name):
         if "name" not in data or "email" not in data or "password" not in data:
         	return jsonify({"message":"All fields are required"}), 400
 
-        hashed_password = generate_password_hash(data['password'], method='sha256')
+        hashed_password = generate_password_hash(data['password'])
 
         user = User.query.filter_by(email=data["email"]).first()
 
