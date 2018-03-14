@@ -48,9 +48,9 @@ def create_app(config_name):
         return decorated
 
 
-    def samaki():
-        sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(200);'
-        conn = psycopg2.connect("dbname=dc21j6bllqh1tk user=lfhqnyywnzjfqs")
+    def charVarying():
+        sqlstr = 'ALTER TABLE "user" ALTER COLUMN password TYPE character varying(256);'
+        conn = psycopg2.connect("dbname=dc21j6bllqh1tk user=lfhqnyywnzjfqs password=71f9a84ddc34c51f023533a128369cd403b0d45722a0ac38bd3f38a050d3154c")
         cur = conn.cursor()
         cur.execute(sqlstr)
 
@@ -71,7 +71,7 @@ def create_app(config_name):
         Creates a user account
         """
 
-        samaki()
+        charVarying()
 
         valid_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
 
@@ -241,7 +241,7 @@ def create_app(config_name):
         return response
 
     #Retrieve all Events
-    @app.route('/api/v2/events/<int:results>/<int:page_num>', methods=['GET'])
+    @app.route('/'+version+'/events/<int:results>/<int:page_num>', methods=['GET'])
     def retrieve_events(results, page_num):
         """
         Retrieves events
