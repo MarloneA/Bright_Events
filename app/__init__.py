@@ -53,7 +53,7 @@ def create_app(config_name):
         return render_template('api.html')
 
     #User registration
-    @app.route('/'+version+'/auth/register', methods=['POST'])
+    @app.route('/api/v2/auth/register', methods=['POST'])
     def create_user():
         """
         Creates a user account
