@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/MarloneA/Bright_Events.svg?branch=master)](https://travis-ci.org/MarloneA/Bright_Events)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f8572925dee64704866b98659cc74462)](https://www.codacy.com/app/MarloneA/Bright_Events?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MarloneA/Bright_Events&amp;utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7eaf42e007c32c817885/maintainability)](https://codeclimate.com/github/MarloneA/Bright_Events/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/7eaf42e007c32c817885/test_coverage)](https://codeclimate.com/github/MarloneA/Bright_Events/test_coverage)
+[![Coverage Status](https://coveralls.io/repos/github/MarloneA/Bright_Events/badge.svg?branch=master)](https://coveralls.io/github/MarloneA/Bright_Events?branch=master)
 
 # Bright_Events
 

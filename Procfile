@@ -1,2 +1,2 @@
-web: gunicorn manage:app
-release: python manage.py db upgrade
+web: gunicorn run:app
+upgrade: python manage.py db upgrade
