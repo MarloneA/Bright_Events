@@ -19,7 +19,7 @@ class TestEvent(BaseTestCase):
         res = self.create_event_helper(head, self.event_data)
 
         self.assertEqual(res.status_code, 201)
-        self.assertIn("new event has been created", res.data)
+        self.assertIn("new event has been created", res.data.decode())
 
 
     def test_create_event_with_empty_title(self):
@@ -34,7 +34,7 @@ class TestEvent(BaseTestCase):
         res = self.create_event_helper(head, self.empty_title)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("Please provide a valid title", res.data)
+        self.assertIn("Please provide a valid title", res.data.decode())
 
     def test_create_event_with_title_as_integer(self):
         """
@@ -48,7 +48,7 @@ class TestEvent(BaseTestCase):
         res = self.create_event_helper(head, self.int_title)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("title cannot be an integer", res.data)
+        self.assertIn("title cannot be an integer", res.data.decode())
 
     def test_retrieve_events(self):
         """
@@ -70,7 +70,7 @@ class TestEvent(BaseTestCase):
 
         res = self.client().get(version+'/events/10/1', headers=head)
 
-        to_json =  json.loads(res.data)
+        to_json =  json.loads(res.data.decode())
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(to_json["total results"], 4)
@@ -93,7 +93,7 @@ class TestEvent(BaseTestCase):
         resU = self.client().put(version+'/events/1', headers=head, data=data)
 
         self.assertEqual(resU.status_code, 200)
-        self.assertIn("The event has been updated!", resU.data)
+        self.assertIn("The event has been updated!", resU.data.decode())
 
 
     def test_delete_event(self):
@@ -113,7 +113,7 @@ class TestEvent(BaseTestCase):
         result = self.client().get('api/v2/events/it/1/1',headers=head)
 
         self.assertEqual(result.status_code, 400)
-        self.assertIn("event not found!", result.data)
+        self.assertIn("event not found!", result.data.decode())
 
     def test_search_for_event(self):
         """
@@ -127,7 +127,7 @@ class TestEvent(BaseTestCase):
         self.create_event_helper(head, self.event_data)
 
         res = self.client().get(version+'/events/daraja/5/1')
-        to_json =  json.loads(res.data)
+        to_json =  json.loads(res.data.decode())
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(len(to_json["Search_Results"]), 1)
@@ -202,7 +202,7 @@ class TestEvent(BaseTestCase):
         res = self.reserve_event_helper(head, "user@test.com")
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome user@test.com, your reservation for the event daraja has been approved", res.data)
+        self.assertIn("Welcome user@test.com, your reservation for the event daraja has been approved", res.data.decode())
 
 
     def test_rsvp_unregistered_user(self):
@@ -219,8 +219,8 @@ class TestEvent(BaseTestCase):
         res = self.reserve_event_helper(head, "unregistered.user@test.com")
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome unregistered.user, your reservation for the event daraja has been approved", res.data)
-        self.assertIn("Your temporary password is 12345, use it to login and set a safer password", res.data)
+        self.assertIn("Welcome unregistered.user, your reservation for the event daraja has been approved", res.data.decode())
+        self.assertIn("Your temporary password is 12345, use it to login and set a safer password", res.data.decode())
 
     def test_retrieve_reserved_guests(self):
         """
@@ -240,9 +240,9 @@ class TestEvent(BaseTestCase):
                 headers=head
                 )
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Guests attending daraja", res.data)
-        self.assertIn("user@test.com", res.data)
-        self.assertIn("test", res.data)
+        self.assertIn("Guests attending daraja", res.data.decode())
+        self.assertIn("user@test.com", res.data.decode())
+        self.assertIn("test", res.data.decode())
 
     def test_error_handler_404(self):
         """
@@ -261,7 +261,7 @@ class TestEvent(BaseTestCase):
                 )
 
         self.assertEqual(res.status_code, 404)
-        self.assertIn("resource not found", res.data)
+        self.assertIn("resource not found", res.data.decode())
 
     def test_error_handler_405(self):
         """
@@ -280,7 +280,7 @@ class TestEvent(BaseTestCase):
                 )
 
         self.assertEqual(res.status_code, 405)
-        self.assertIn("method not allowed for the requested resource", res.data)
+        self.assertIn("method not allowed for the requested resource", res.data.decode())
 
     def test_error_handler_500(self):
         """

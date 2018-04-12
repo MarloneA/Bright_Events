@@ -15,7 +15,7 @@ class TestAuth(BaseTestCase):
         res = self.register_helper(self.user_data)
 
         self.assertEqual(res.status_code, 201)
-        self.assertIn("registration succesfull", res.data)
+        self.assertIn("registration succesfull", res.data.decode())
 
     def test_register_user_with_spaces(self):
         """
@@ -25,7 +25,7 @@ class TestAuth(BaseTestCase):
         res = self.register_helper(self.empty_data)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("name/email/password fields cannot be empty", res.data)
+        self.assertIn("name/email/password fields cannot be empty", res.data.decode())
 
     def test_register_with_name_as_integer(self):
         """
@@ -35,7 +35,7 @@ class TestAuth(BaseTestCase):
         res = self.register_helper(self.int_data)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("name cannot be an integer", res.data)
+        self.assertIn("name cannot be an integer", res.data.decode())
 
     def test_password_should_not_be_less_than_four_characters(self):
         """
@@ -46,7 +46,7 @@ class TestAuth(BaseTestCase):
         res = self.register_helper(self.user_data)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("password should be at least 4 characters", res.data)
+        self.assertIn("password should be at least 4 characters", res.data.decode())
 
     def test_if_account_is_already_registered(self):
         """
@@ -57,7 +57,7 @@ class TestAuth(BaseTestCase):
         res = self.register_helper(self.user_data)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("Email has already been registered", res.data)
+        self.assertIn("Email has already been registered", res.data.decode())
 
     def test_login(self):
         """
@@ -68,8 +68,8 @@ class TestAuth(BaseTestCase):
         res = self.login_helper(self.login_data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Login succesfull", res.data)
-        self.assertIn("x-access-token", res.data)
+        self.assertIn("Login succesfull", res.data.decode())
+        self.assertIn("x-access-token", res.data.decode())
 
     def test_login_with_wrong_email(self):
         """
@@ -81,7 +81,7 @@ class TestAuth(BaseTestCase):
         res = self.login_helper(self.login_data)
 
         self.assertEqual(res.status_code, 401)
-        self.assertIn("Could not verify", res.data)
+        self.assertIn("Could not verify", res.data.decode())
 
     def test_login_with_wrong_password(self):
         """
@@ -93,7 +93,7 @@ class TestAuth(BaseTestCase):
         res = self.login_helper(self.login_data)
 
         self.assertEqual(res.status_code, 401)
-        self.assertIn("Incorrect password", res.data)
+        self.assertIn("Incorrect password", res.data.decode())
 
 
     def test_login_request_has_a_json_object(self):
@@ -106,7 +106,7 @@ class TestAuth(BaseTestCase):
         res = self.login_helper(self.login_data)
 
         self.assertEqual(res.status_code, 401)
-        self.assertIn("Invalid email/password", res.data)
+        self.assertIn("Invalid email/password", res.data.decode())
 
     def test_invalid_token_in_respnse_header(self):
         """
@@ -121,7 +121,7 @@ class TestAuth(BaseTestCase):
         res = self.create_event_helper(head, self.event_data)
 
         self.assertEqual(res.status_code, 401)
-        self.assertIn("Token is invalid!", res.data)
+        self.assertIn("Token is invalid!", res.data.decode())
 
 
     def test_logout_user(self):
@@ -132,11 +132,11 @@ class TestAuth(BaseTestCase):
         self.register_helper(self.user_data)
         res = self.login_helper(self.login_data)
 
-        to_json = json.loads(res.data)
+        to_json = json.loads(res.data.decode())
         res = self.logout_helper(to_json)
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Successfully logged out",res.data)
+        self.assertIn("Successfully logged out",res.data.decode())
 
 
 
@@ -149,7 +149,7 @@ class TestAuth(BaseTestCase):
         res = self.reset_password_helper()
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn("password has been updated succesfully", res.data)
+        self.assertIn("password has been updated succesfully", res.data.decode())
 
 
 if __name__ == "__main__":
