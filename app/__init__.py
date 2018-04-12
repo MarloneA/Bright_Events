@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response, render_template
+from flask import Flask, request, jsonify, make_response, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 
@@ -224,6 +224,11 @@ def create_app(config_name):
 
         return response
 
+    @app.route(version+'/events', methods=['GET'])
+    def retrieve_default_events():
+        return redirect('http://127.0.0.1:5000/api/v2/events/4/1')
+
+
     #Retrieve all Events
     @app.route(version+'/events/<int:results>/<int:page_num>', methods=['GET'])
     def retrieve_events(results, page_num):
@@ -255,6 +260,11 @@ def create_app(config_name):
                             "next page":next_num
 
                             }), 200
+
+    @app.route(version+'/events/myevents', methods=['GET'])
+    @token_required
+    def retrieve_my_default_events(current_user):
+        return redirect('http://127.0.0.1:5000/api/v2/events/myevents/4/1')
 
     #Retrieve my Events
     @app.route(version+'/events/myevents/<int:results>/<int:page_num>', methods=['GET'])
@@ -289,6 +299,21 @@ def create_app(config_name):
                             "next page":next_num
 
                             }), 200
+
+    #Retrieve a single Event
+    @app.route(version+'/events/<eventId>', methods=['GET'])
+    def single_event(eventId):
+        """
+        retrieves a single Event
+        """
+
+        event = Event.query.filter_by(event_id=eventId).first()
+
+
+        if not event:
+            return jsonify({'message' : 'The requested event was not found!'}), 400
+
+        return jsonify({"event":event.json()})
 
     #Update Event
     @app.route(version+'/events/<eventId>', methods=['PUT'])
@@ -423,6 +448,8 @@ def create_app(config_name):
             return jsonify({"message":"You do not have enough permissions to view this information"}), 401
 
         guests = event.user
+        if not guests:
+            return jsonify({"message":"Your event has no guests yet"}), 404
 
         output = []
         for guest in guests:
@@ -433,7 +460,13 @@ def create_app(config_name):
 
         return jsonify({'message':"Guests attending "+event.title, "guest_list":output}), 200
 
+
+
     #Search Event
+    @app.route(version+'/events/<q>', methods=['GET'])
+    def retrieve_searched_events(q):
+        return redirect('http://127.0.0.1:5000/api/v2//events/'+q+'/1/1')
+
     @app.route(version+'/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
     def get_one_event(q, results, page_num):
 
