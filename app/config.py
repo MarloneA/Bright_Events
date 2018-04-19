@@ -7,6 +7,7 @@ class Config(object):
     """
 
     DEBUG = False
+    version = os.getenv('URL_PREFIX')
 
 class Development(Config):
     """

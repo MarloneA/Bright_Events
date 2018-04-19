@@ -127,20 +127,15 @@ class BaseTestCase(unittest.TestCase):
 
         return res
 
-    def register_user(self, name="test", email="user@test.com", password="test1234"):
-        """
-        This helper method helps register a test user.
-        """
-
-        user_data = {
-            'name':name,
-            'email': email,
-            'password': password
-        }
-        return self.client().post(version+'/auth/register', data=json.dumps(user_data))
+    # def register_user(self):
+    #     """
+    #     This helper method helps register a test user.
+    #     """
+    #
+    #     return self.client().post(version+'/auth/register', data=json.dumps(self.user_data))
 
 
-    def login_user(self, email="user@test.com", password="test1234"):
+    def login_user(self, email="admin@admin.com", password="admin"):
         """
         This helper method helps log in a test user.
         """

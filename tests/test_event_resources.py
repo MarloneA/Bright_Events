@@ -12,7 +12,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/events' has created an event
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         print(result)
@@ -29,7 +29,7 @@ class TestEvent(BaseTestCase):
         Tests users ahould not be able to create titles with empty spaces
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -43,7 +43,7 @@ class TestEvent(BaseTestCase):
         Test users should not be able to supply integers as titles
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -57,7 +57,7 @@ class TestEvent(BaseTestCase):
         Test that APi endpoint retrieves all events recorded in the db
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -85,7 +85,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/events/<eventId>' has made an update request
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -103,7 +103,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/events/<eventId>' has deleted an event
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -122,7 +122,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/events/<searchQuery>/<int:results/<int:page_num>' retrieves the requested event
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -144,7 +144,7 @@ class TestEvent(BaseTestCase):
         """
         Test that API endpoint version+'/events/category/<category>' filters events by a category
         """
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -170,7 +170,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint version+'/events/location/<location>' filters events by location
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -195,7 +195,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -204,7 +204,7 @@ class TestEvent(BaseTestCase):
         res = self.reserve_event_helper(head, "user@test.com")
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Welcome user@test.com, your reservation for the event daraja has been approved", res.data.decode())
+        self.assertIn("Welcome user, your reservation for the event daraja has been approved", res.data.decode())
 
 
     def test_rsvp_unregistered_user(self):
@@ -212,7 +212,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/event/<eventId>/rsvp' reserves a guest without registration
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
 
         result = self.login_user()
         head = self.set_headers(result)
@@ -229,7 +229,7 @@ class TestEvent(BaseTestCase):
         Test that API endpoint '/api/event/<eventId>/rsvp' retrieves event guests
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
         head = self.set_headers(result)
 
@@ -251,7 +251,7 @@ class TestEvent(BaseTestCase):
         Test how the Api handles a 404 error
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
@@ -270,7 +270,7 @@ class TestEvent(BaseTestCase):
         Test how the Api handles a 405 error
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)

@@ -389,7 +389,7 @@ def create_app(config_name):
 
             hashed_password = generate_password_hash("royg87nvtq", method='sha256')
 
-            new_user = User(name=data['email'].split("@")[0], email=data["email"], password=hashed_password)
+            new_user = User(firstName=data['email'].split("@")[0], lastName=data['email'].split("@")[0], email=data["email"], password=hashed_password)
 
             new_user.save()
 
@@ -454,7 +454,7 @@ def create_app(config_name):
         output = []
         for guest in guests:
             attendees = {}
-            attendees['name'] = guest.name
+            attendees['name'] = guest.firstName
             attendees['email'] = guest.email
             output.append(attendees)
 

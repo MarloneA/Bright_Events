@@ -113,7 +113,7 @@ class TestAuth(BaseTestCase):
         Test if a token passed in the response header is invalid
         """
 
-        self.register_user()
+        self.register_helper(self.user_data)
         result = self.login_user()
 
         head = self.set_headers(result)
