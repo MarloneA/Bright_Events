@@ -12,7 +12,8 @@ class BaseTestCase(unittest.TestCase):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.user_data = {
-            'name':'Test Admin',
+            'firstName':'Test',
+            'lastName':'Admin',
             'email': 'admin@admin.com',
             'password': 'admin'
         }
@@ -21,12 +22,14 @@ class BaseTestCase(unittest.TestCase):
             'password': 'admin'
         }
         self.empty_data = {
-            'name':'  ',
+            'firstName': ' ',
+            'lastName': ' ',
             'email': '  ',
             'password': '  '
         }
         self.int_data = {
-            'name':3,
+            'firstName':3,
+            'lastName':3,
             'email': 'admin@admin.com',
             'password': 'admin'
         }
@@ -171,6 +174,8 @@ class BaseTestCase(unittest.TestCase):
         """
 
         token = json.loads(par.data.decode())['x-access-token']
+
+        print(par)
 
         head = {
             "x-access-token":token,

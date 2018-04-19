@@ -63,7 +63,7 @@ def create_app(config_name):
 
         data = request.get_json(force=True)
 
-        if "name" not in data or "email" not in data or "password" not in data:
+        if "firstName" not in data or "lastName" not in data or "email" not in data or "password" not in data:
         	return jsonify({"message":"All fields are required"}), 400
 
         hashed_password = generate_password_hash(data['password'], method='sha256')
@@ -73,15 +73,15 @@ def create_app(config_name):
         if user:
         	return jsonify({"message":"Email has already been registered"}), 400
 
-        if type(data["name"]) == int:
+        if type(data["firstName"]) == int or type(data["lastName"]) == int:
 
-            return jsonify({"message":"name cannot be an integer"}), 400
+            return jsonify({"message":"names cannot be integers"}), 400
 
-        if data['name'] == "" or data['email'] == "" or data['password'] == "":
+        if data['firstName'] == "" or data["lastName"] == "" or data['email'] == "" or data['password'] == "":
 
         	return jsonify({"message":"Empty field detected please fill all fields"}), 400
 
-        if data['name'].split() == [] or data['email'].split() == [] or data['password'].split() == []:
+        if data['firstName'].split() == [] or data['lastName'].split() == [] or data['email'].split() == [] or data['password'].split() == []:
 
         	return jsonify({"message":"name/email/password fields cannot be empty"}), 400
 
@@ -95,7 +95,7 @@ def create_app(config_name):
 
         else:
 
-        	new_user = User(name=data['name'], email=data["email"], password=hashed_password)
+        	new_user = User(firstName=data['firstName'], lastName=data['lastName'], email=data["email"], password=hashed_password)
 
         	new_user.save()
 
@@ -387,7 +387,7 @@ def create_app(config_name):
         #if the user is not registered, register the email and send a temp pass
         if not usr:
 
-            hashed_password = generate_password_hash("12345", method='sha256')
+            hashed_password = generate_password_hash("royg87nvtq", method='sha256')
 
             new_user = User(name=data['email'].split("@")[0], email=data["email"], password=hashed_password)
 
@@ -463,10 +463,6 @@ def create_app(config_name):
 
 
     #Search Event
-    @app.route(version+'/events/<q>', methods=['GET'])
-    def retrieve_searched_events(q):
-        return redirect('http://127.0.0.1:5000/api/v2//events/'+q+'/1/1')
-
     @app.route(version+'/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
     def get_one_event(q, results, page_num):
 

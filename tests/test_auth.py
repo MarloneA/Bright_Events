@@ -35,7 +35,7 @@ class TestAuth(BaseTestCase):
         res = self.register_helper(self.int_data)
 
         self.assertEqual(res.status_code, 400)
-        self.assertIn("name cannot be an integer", res.data.decode())
+        self.assertIn("names cannot be integers", res.data.decode())
 
     def test_password_should_not_be_less_than_four_characters(self):
         """

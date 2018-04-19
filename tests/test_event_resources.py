@@ -15,6 +15,8 @@ class TestEvent(BaseTestCase):
         self.register_user()
         result = self.login_user()
 
+        print(result)
+
         head = self.set_headers(result)
         res = self.create_event_helper(head, self.event_data)
 
