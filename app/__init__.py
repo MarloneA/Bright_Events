@@ -34,8 +34,8 @@ def create_app(config_name):
             token = None
             secret = os.getenv('SECRET_KEY')
 
-            if 'x-access-token' in request.headers:
-                token = request.headers['x-access-token']
+            if 'token' in request.headers:
+                token = request.headers['token']
 
             if not token:
                 return jsonify({'message' : 'Token is missing!'}), 401
@@ -128,7 +128,7 @@ def create_app(config_name):
             if token:
                 response = {
                     "message":"Login succesfull",
-                    "x-access-token":token.decode()
+                    "token":token.decode()
                 }
             return make_response(jsonify(response)), 200
 
@@ -142,7 +142,7 @@ def create_app(config_name):
         Logs out a user
         """
 
-        auth_header = request.headers.get('x-access-token')
+        auth_header = request.headers.get('token')
         if auth_header:
             try:
                 auth_token = auth_header.split(" ")[0]

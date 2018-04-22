@@ -69,7 +69,7 @@ class TestAuth(BaseTestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertIn("Login succesfull", res.data.decode())
-        self.assertIn("x-access-token", res.data.decode())
+        self.assertIn("token", res.data.decode())
 
     def test_login_with_wrong_email(self):
         """
@@ -117,7 +117,7 @@ class TestAuth(BaseTestCase):
         result = self.login_user()
 
         head = self.set_headers(result)
-        head["x-access-token"]="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjQsImV4cCI6MTUxODQyMDg4MX0.O3Zl80XmAIbaSQdf8RbP44TEyA4FxbkyniH2dwOdB44"
+        head["token"]="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOjQsImV4cCI6MTUxODQyMDg4MX0.O3Zl80XmAIbaSQdf8RbP44TEyA4FxbkyniH2dwOdB44"
         res = self.create_event_helper(head, self.event_data)
 
         self.assertEqual(res.status_code, 401)

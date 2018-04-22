@@ -122,7 +122,7 @@ class BaseTestCase(unittest.TestCase):
 
         res = self.client().post(
             version+'/auth/logout',
-            headers={"x-access-token":par['x-access-token']}
+            headers={"token":par['token']}
         )
 
         return res
@@ -168,12 +168,12 @@ class BaseTestCase(unittest.TestCase):
         helper method that sets request headers
         """
 
-        token = json.loads(par.data.decode())['x-access-token']
+        token = json.loads(par.data.decode())['token']
 
         print(par)
 
         head = {
-            "x-access-token":token,
+            "token":token,
             "Content-Type":"application/json"
             }
 
