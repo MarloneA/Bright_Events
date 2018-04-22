@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from flask_cors import CORS
 
 import jwt
 import datetime
@@ -19,6 +20,8 @@ version = os.environ['URL_PREFIX']
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
+
     app.config.from_object(app_config[config_name])
     # app.config.from_pyfile('config.py')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
