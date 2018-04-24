@@ -128,7 +128,13 @@ def create_app(config_name):
             if token:
                 response = {
                     "message":"Login succesfull",
-                    "token":token.decode()
+                    "user":{
+                        "firstName":user.firstName,
+                        "lastName":user.lastName,
+                        "email":user.email,
+                        "id":user.public_id,
+                        "token":token.decode()
+                    }
                 }
             return make_response(jsonify(response)), 200
 
