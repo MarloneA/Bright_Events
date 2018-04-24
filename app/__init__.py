@@ -235,7 +235,7 @@ def create_app(config_name):
 
     @app.route(version+'/events', methods=['GET'])
     def retrieve_default_events():
-        return redirect('http://127.0.0.1:5000/api/v2/events/4/1')
+        return redirect('https://andela-brightevents.herokuapp.com/api/v2/events/4/1')
 
 
     #Retrieve all Events
@@ -273,7 +273,7 @@ def create_app(config_name):
     @app.route(version+'/events/myevents', methods=['GET'])
     @token_required
     def retrieve_my_default_events(current_user):
-        return redirect('http://127.0.0.1:5000/api/v2/events/myevents/4/1')
+        return redirect('https://andela-brightevents.herokuapp.com/api/v2/events/myevents/4/1')
 
     #Retrieve my Events
     @app.route(version+'/events/myevents/<int:results>/<int:page_num>', methods=['GET'])
