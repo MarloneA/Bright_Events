@@ -299,7 +299,7 @@ def create_app(config_name):
             output.append(event.json())
 
         return jsonify({
-                            "Message":"Events created by "+current_user.name,
+                            "Message":"Events created by "+current_user.firstName,
                             "total results": num_results,
                             "total pages": total_pages,
                             "cur page": current_page,
