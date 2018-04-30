@@ -228,7 +228,16 @@ def create_app(config_name):
                             )
         new_event.save()
 
-        response = jsonify({"message":"new event has been created"})
+        created_evnt = Event.query.filter_by(title=events["title"].lower()).first()
+
+        response = jsonify({
+            "message":"new event has been created",
+            "event":{
+                "id":created_evnt.event_id,
+                "title":created_evnt.title,
+                "created_by":created_evnt.created_by
+            }
+            })
         response.status_code = 201
 
         return response
