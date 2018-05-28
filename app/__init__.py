@@ -7,6 +7,7 @@ import jwt
 import datetime
 import re
 import os
+import math, string
 
 db = SQLAlchemy()
 
@@ -49,6 +50,10 @@ def create_app(config_name):
             return f(current_user, *args, **kwargs)
 
         return decorated
+
+    def generate_password(pass_len):
+        symbols = string.printable.strip()
+        return ''.join([symbols[math.floor(int(x) / 256 * len(symbols))] for x in os.urandom(pass_len)])
 
     #Render documentation as root of the api
     @app.route('/')
@@ -405,7 +410,9 @@ def create_app(config_name):
         #if the user is not registered, register the email and send a temp pass
         if not usr:
 
-            hashed_password = generate_password_hash("royg87nvtq", method='sha256')
+            rand_pass = generate_password(8)
+
+            hashed_password = generate_password_hash(rand_pass, method='sha256')
 
             new_user = User(firstName=data['email'].split("@")[0], lastName=data['email'].split("@")[0], email=data["email"], password=hashed_password)
 
@@ -429,7 +436,7 @@ def create_app(config_name):
 
             return jsonify({
                                 "Message":'Welcome ' + data["email"].split("@")[0] +', your reservation for the event '+event.title+' has been approved',
-                                "important":"Your temporary password is 12345, use it to login and set a safer password"
+                                "important":"Your temporary password is, use it to login and set a safer password"
                                 }), 200
 
         else:
@@ -506,12 +513,12 @@ def create_app(config_name):
         		items.append(evnt.json())
 
         	return jsonify({
-                                "total results": num_results,
-                                "total pages": total_pages,
-                                "cur page": current_page,
-                                "Search_Results":items,
-                                "prev page":prev_num,
-                                "next page":next_num,
+                                "total": num_results,
+                                "pages": total_pages,
+                                "page": current_page,
+                                "search":items,
+                                "prev":prev_num,
+                                "next":next_num,
 
                                 }), 200
 
