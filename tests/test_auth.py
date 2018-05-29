@@ -69,7 +69,7 @@ class TestAuth(BaseTestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertIn("Login succesfull", res.data.decode())
-        self.assertIn("token", res.data.decode())
+        self.assertIn("user", res.data.decode())
 
     def test_login_with_wrong_email(self):
         """

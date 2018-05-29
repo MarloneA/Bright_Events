@@ -222,7 +222,7 @@ class TestEvent(BaseTestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertIn("Welcome unregistered.user, your reservation for the event daraja has been approved", res.data.decode())
-        self.assertIn("Your temporary password is 12345, use it to login and set a safer password", res.data.decode())
+        self.assertIn("Your temporary password is, use it to login and set a safer password", res.data.decode())
 
     def test_retrieve_reserved_guests(self):
         """

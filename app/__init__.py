@@ -126,7 +126,7 @@ def create_app(config_name):
 
             payload = {
                 'public_id' : user.public_id,
-                'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+                'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=30)
             }
             secret = os.getenv('SECRET_KEY')
             token = jwt.encode(payload, secret)
