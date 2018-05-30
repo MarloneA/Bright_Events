@@ -198,6 +198,7 @@ def create_app(config_name):
 
     #Create Event
     @app.route(version+'/events', methods=['POST'])
+    @cross_origin()
     @token_required
     def create_event(current_user):
         """
@@ -340,6 +341,7 @@ def create_app(config_name):
 
     #Update Event
     @app.route(version+'/events/<eventId>', methods=['PUT'])
+    @cross_origin()
     @token_required
     def update_event(current_user, eventId):
         """
@@ -368,6 +370,7 @@ def create_app(config_name):
 
     #Delete Event
     @app.route(version+'/events/<eventId>', methods=['DELETE'])
+    @cross_origin()
     @token_required
     def delete_event(current_user, eventId):
         """
