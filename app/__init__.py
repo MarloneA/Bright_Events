@@ -21,7 +21,7 @@ version = os.environ['URL_PREFIX']
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
+    CORS(app, resources=r'/api/*')
 
     app.config.from_object(app_config[config_name])
     # app.config.from_pyfile('config.py')
@@ -484,8 +484,6 @@ def create_app(config_name):
             output.append(attendees)
 
         return jsonify({'message':"Guests attending "+event.title, "guest_list":output}), 200
-
-
 
     #Search Event
     @app.route(version+'/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
