@@ -205,6 +205,8 @@ def create_app(config_name):
         """
 
         events = request.get_json(force=True)
+        
+        print(events)
 
         if type(events["title"]) == int:
 
