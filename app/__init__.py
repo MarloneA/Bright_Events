@@ -486,7 +486,7 @@ def create_app(config_name):
             attendees['email'] = guest.email
             output.append(attendees)
 
-        return jsonify({'message':"Guests attending "+event.title, "guest_list":output}), 200
+        return jsonify({'message':"Guests attending "+event.title, "guests":output}), 200
 
     #Search Event
     @app.route(version+'/events/<q>/<int:results>/<int:page_num>', methods=['GET'])
