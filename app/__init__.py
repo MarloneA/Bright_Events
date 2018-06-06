@@ -548,12 +548,12 @@ def create_app(config_name):
         	categories.append(evnt.json())
 
         return jsonify({
-                            "total results": num_results,
-                            "total pages": total_pages,
-                            "cur page": current_page,
-                            "prev page":prev_num,
-                            "next page":next_num,
-                            "Filter_Results":categories
+                            "total": num_results,
+                            "pages": total_pages,
+                            "page": current_page,
+                            "prev":prev_num,
+                            "next":next_num,
+                            "filter":categories
 
                             }), 200
 
@@ -582,12 +582,12 @@ def create_app(config_name):
         	locations.append(evnt.json())
 
         return jsonify({
-                            "total results": num_results,
-                            "total pages": total_pages,
-                            "cur page": current_page,
-                            "prev page":prev_num,
-                            "next page":next_num,
-                            "Filter_Results":locations
+                            "total": num_results,
+                            "pages": total_pages,
+                            "page": current_page,
+                            "prev":prev_num,
+                            "next":next_num,
+                            "Filter":locations
 
                             }), 200
 
